@@ -1,0 +1,4 @@
+<resources>
+    <string name="recipe_label_ingredients_list">Ingredients</string>
+    <string name="recipe_label_steps_list">Steps</string>
+</resources>
