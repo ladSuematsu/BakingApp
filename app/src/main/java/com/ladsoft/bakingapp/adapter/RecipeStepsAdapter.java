@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.ladsoft.bakingapp.R;
-import com.ladsoft.bakingapp.entity.Ingredient;
 import com.ladsoft.bakingapp.entity.Step;
 
 import java.util.ArrayList;
@@ -21,6 +20,7 @@ public class RecipeStepsAdapter extends RecyclerView.Adapter<RecipeStepsAdapter.
 
     private final LayoutInflater layoutInflater;
     private List<Step> datasource;
+    private Listener listener;
 
     public RecipeStepsAdapter(LayoutInflater layoutInflater) {
         this.layoutInflater = layoutInflater;
@@ -48,7 +48,11 @@ public class RecipeStepsAdapter extends RecyclerView.Adapter<RecipeStepsAdapter.
         notifyDataSetChanged();
     }
 
-    class StepViewHolder extends RecyclerView.ViewHolder {
+    public void setListener(Listener listener) {
+        this.listener = listener;
+    }
+
+    class StepViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         @BindView(R.id.step) TextView step;
 
         StepViewHolder(View itemView) {
@@ -59,5 +63,16 @@ public class RecipeStepsAdapter extends RecyclerView.Adapter<RecipeStepsAdapter.
         public void setData(Step step) {
             this.step.setText(step.getDescription());
         }
+
+        @Override
+        public void onClick(View v) {
+            if(listener != null) {
+                listener.onItemClickListener(datasource.get(getAdapterPosition()));
+            }
+        }
+    }
+
+    public interface Listener {
+        void onItemClickListener(Step step);
     }
 }

@@ -62,7 +62,6 @@ public class RecipeFragment extends Fragment {
         steps.setNestedScrollingEnabled(false);
         steps.setLayoutManager(new LinearLayoutManager(getContext()));
         steps.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
-        stepsAdapter = new RecipeStepsAdapter(LayoutInflater.from(getContext()));
         steps.setAdapter(stepsAdapter);
     }
 
@@ -72,6 +71,10 @@ public class RecipeFragment extends Fragment {
 
         setIngredientsDataSource();
         setStepsDataSource();
+    }
+
+    public void setListener(RecipeStepsAdapter.Listener listener) {
+        stepsAdapter.setListener(listener);
     }
 
     public void setIngredientsDataSource() {

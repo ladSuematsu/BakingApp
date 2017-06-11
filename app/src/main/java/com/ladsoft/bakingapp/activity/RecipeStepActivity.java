@@ -9,19 +9,18 @@ import android.view.View;
 import android.widget.FrameLayout;
 
 import com.ladsoft.bakingapp.R;
-import com.ladsoft.bakingapp.adapter.RecipeStepsAdapter;
-import com.ladsoft.bakingapp.entity.Step;
 import com.ladsoft.bakingapp.fragment.RecipeFragment;
+import com.ladsoft.bakingapp.fragment.RecipeStepFragment;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
-public class RecipeActivity extends AppCompatActivity {
+public class RecipeStepActivity extends AppCompatActivity {
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.content) FrameLayout content;
 
-    private RecipeFragment recipeFragment;
+    private RecipeStepFragment recipeStepFragment;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -46,20 +45,11 @@ public class RecipeActivity extends AppCompatActivity {
     }
 
     private void setupFragments() {
-        recipeFragment = RecipeFragment.newInstance();
+        recipeStepFragment = RecipeStepFragment.newInstance();
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
-                .replace(content.getId(), recipeFragment)
+                .replace(content.getId(), recipeStepFragment)
                 .commit();
-
-        recipeFragment.setListener(stepAdapterListener);
     }
-
-    private RecipeStepsAdapter.Listener stepAdapterListener = new RecipeStepsAdapter.Listener() {
-        @Override
-        public void onItemClickListener(Step step) {
-
-        }
-    };
 }

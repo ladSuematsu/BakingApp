@@ -9,6 +9,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.TextView;
 
 import com.ladsoft.bakingapp.R;
 import com.ladsoft.bakingapp.adapter.RecipesAdapter;
@@ -21,14 +23,13 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class RecipesFragment extends Fragment {
+public class RecipeStepFragment extends Fragment {
 
-    @BindView(R.id.recipes) RecyclerView recipes;
-    private RecipesAdapter adapter;
-    private RecipesAdapter.Listener recipeAdapterListener;
+    @BindView(R.id.step_description) TextView stepDescription;
+    @BindView(R.id.media_player) FrameLayout mediaPlayerContainer;
 
-    public static RecipesFragment newInstance() {
-        return new RecipesFragment();
+    public static RecipeStepFragment newInstance() {
+        return new RecipeStepFragment();
     }
 
     @Override
@@ -39,7 +40,7 @@ public class RecipesFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_recipes, container, false);
+        View view = inflater.inflate(R.layout.fragment_recipe_step, container, false);
         ButterKnife.bind(this, view);
         return view;
     }
@@ -49,25 +50,10 @@ public class RecipesFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
-        recipes.setLayoutManager(layoutManager);
-        recipes.addItemDecoration(new SimplePaddingDecoration(getResources().getDimensionPixelSize(R.dimen.list_item_content_margin)));
-        adapter = new RecipesAdapter(LayoutInflater.from(getContext()));
-        adapter.setListener(recipeAdapterListener);
-        recipes.setAdapter(adapter);
         setDataSource();
     }
 
     public void setDataSource() {
-        List<Recipe> dataSource = new ArrayList<>();
 
-        for(int i = 1; i <= 25; i++) {
-            dataSource.add(new Recipe(i, "Recipe " + i, i, ""));
-        }
-
-        adapter.setDatasource(dataSource);
-    }
-
-    public void setRecipeAdapterListener(RecipesAdapter.Listener recipeAdapterListener) {
-        this.recipeAdapterListener = recipeAdapterListener;
     }
 }
