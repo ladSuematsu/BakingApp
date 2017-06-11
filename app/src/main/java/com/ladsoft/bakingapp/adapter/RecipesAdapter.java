@@ -1,7 +1,6 @@
 package com.ladsoft.bakingapp.adapter;
 
 
-import android.support.v4.view.LayoutInflaterCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +20,7 @@ public class RecipesAdapter extends RecyclerView.Adapter<RecipesAdapter.RecipeVi
 
     private final LayoutInflater layoutInflater;
     private List<Recipe> datasource;
+    private Listener callback;
 
     public RecipesAdapter(LayoutInflater layoutInflater) {
         this.layoutInflater = layoutInflater;
@@ -48,16 +48,32 @@ public class RecipesAdapter extends RecyclerView.Adapter<RecipesAdapter.RecipeVi
         notifyDataSetChanged();
     }
 
-    class RecipeViewHolder extends RecyclerView.ViewHolder {
+    public void setListener(Listener listener) {
+        this.callback = listener;
+    }
+
+    class RecipeViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         @BindView(R.id.title) TextView title;
 
         RecipeViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+            itemView.setOnClickListener(this);
         }
 
         public void setData(Recipe recipe) {
             title.setText(recipe.getName());
         }
+
+        @Override
+        public void onClick(View v) {
+            if(callback != null) {
+                callback.onItemClickListener(datasource.get(getAdapterPosition()));
+            }
+        }
+    }
+
+    public interface Listener {
+        void onItemClickListener(Recipe recipe);
     }
 }
