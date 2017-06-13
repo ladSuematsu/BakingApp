@@ -31,6 +31,7 @@ public class RecipeFragment extends Fragment {
     @BindView(R.id.steps) RecyclerView steps;
     private RecipeIngredientsAdapter ingredientsAdapter;
     private RecipeStepsAdapter stepsAdapter;
+    private RecipeStepsAdapter.Listener listener;
 
     public static RecipeFragment newInstance() {
         return new RecipeFragment();
@@ -62,6 +63,8 @@ public class RecipeFragment extends Fragment {
         steps.setNestedScrollingEnabled(false);
         steps.setLayoutManager(new LinearLayoutManager(getContext()));
         steps.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
+        stepsAdapter = new RecipeStepsAdapter(LayoutInflater.from(getContext()));
+        stepsAdapter.setListener(listener);
         steps.setAdapter(stepsAdapter);
     }
 
@@ -74,7 +77,7 @@ public class RecipeFragment extends Fragment {
     }
 
     public void setListener(RecipeStepsAdapter.Listener listener) {
-        stepsAdapter.setListener(listener);
+        this.listener = listener;
     }
 
     public void setIngredientsDataSource() {
