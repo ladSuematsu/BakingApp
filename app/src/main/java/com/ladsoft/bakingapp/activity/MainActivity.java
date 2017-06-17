@@ -27,7 +27,8 @@ public class MainActivity extends AppCompatActivity {
         if(savedInstanceState == null) {
             setupFragments();
 
-            startActivity(new Intent(this, RecipeActivity.class));
+//            startActivity(new Intent(this, RecipeActivity.class));
+            startActivity(new Intent(this, RecipeStepActivity.class));
         }
     }
 
