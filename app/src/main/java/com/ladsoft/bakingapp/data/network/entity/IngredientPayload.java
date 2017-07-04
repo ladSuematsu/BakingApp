@@ -10,7 +10,7 @@ public class IngredientPayload {
     private long id;
 
     @Expose @SerializedName("quantity")
-    private int quantity;
+    private double quantity;
 
     @Expose @SerializedName("measure")
     private String measure;
@@ -22,7 +22,7 @@ public class IngredientPayload {
         return id;
     }
 
-    public int getQuantity() {
+    public double getQuantity() {
         return quantity;
     }
 

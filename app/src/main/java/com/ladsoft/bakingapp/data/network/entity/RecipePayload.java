@@ -8,6 +8,9 @@ import java.util.List;
 
 public class RecipePayload {
 
+    public RecipePayload() {
+    }
+
     @Expose @SerializedName("id")
     private long id;
 

@@ -1,7 +1,10 @@
 package com.ladsoft.bakingapp.entity;
 
 
-public class Step {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class Step implements Parcelable {
     private long id;
     private long stepId;
     private long recipeId;
@@ -19,6 +22,28 @@ public class Step {
         this.videoUrl = videoUrl;
         this.thumbnailUrl = thumbnailUrl;
     }
+
+    protected Step(Parcel in) {
+        id = in.readLong();
+        stepId = in.readLong();
+        recipeId = in.readLong();
+        shortDescription = in.readString();
+        description = in.readString();
+        videoUrl = in.readString();
+        thumbnailUrl = in.readString();
+    }
+
+    public static final Creator<Step> CREATOR = new Creator<Step>() {
+        @Override
+        public Step createFromParcel(Parcel in) {
+            return new Step(in);
+        }
+
+        @Override
+        public Step[] newArray(int size) {
+            return new Step[size];
+        }
+    };
 
     public long getId() {
         return id;
@@ -46,5 +71,21 @@ public class Step {
 
     public String getThumbnailUrl() {
         return thumbnailUrl;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeLong(id);
+        dest.writeLong(stepId);
+        dest.writeLong(recipeId);
+        dest.writeString(shortDescription);
+        dest.writeString(description);
+        dest.writeString(videoUrl);
+        dest.writeString(thumbnailUrl);
     }
 }
