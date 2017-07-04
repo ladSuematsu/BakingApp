@@ -1,6 +1,7 @@
 package com.ladsoft.bakingapp.fragment;
 
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -10,10 +11,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.exoplayer2.util.Util;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.ladsoft.bakingapp.R;
 import com.ladsoft.bakingapp.adapter.RecipesAdapter;
+import com.ladsoft.bakingapp.data.network.entity.RecipePayload;
+import com.ladsoft.bakingapp.data.repository.RecipeRepository;
 import com.ladsoft.bakingapp.entity.Recipe;
+import com.ladsoft.bakingapp.mvp.model.RecipesModel;
+import com.ladsoft.bakingapp.mvp.presenter.RecipesPresenter;
+import com.ladsoft.bakingapp.mvp.view.RecipeView;
 import com.ladsoft.bakingapp.view.layoutmanager.decoration.SimplePaddingDecoration;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,19 +32,22 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class RecipesFragment extends Fragment {
+public class RecipesFragment extends Fragment implements RecipeView {
 
     @BindView(R.id.recipes) RecyclerView recipes;
     private RecipesAdapter adapter;
     private RecipesAdapter.Listener recipeAdapterListener;
+    private RecipesPresenter presenter;
 
     public static RecipesFragment newInstance() {
         return new RecipesFragment();
     }
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        RecipesModel model = new RecipesModel();
+        presenter = new RecipesPresenter(model);
     }
 
     @Nullable
@@ -54,20 +68,47 @@ public class RecipesFragment extends Fragment {
         adapter = new RecipesAdapter(LayoutInflater.from(getContext()));
         adapter.setListener(recipeAdapterListener);
         recipes.setAdapter(adapter);
-        setDataSource();
     }
 
-    public void setDataSource() {
-        List<Recipe> dataSource = new ArrayList<>();
+    @Override
+    public void onStart() {
+        super.onStart();
+        presenter.attachView(this);
+    }
 
-        for(int i = 1; i <= 25; i++) {
-            dataSource.add(new Recipe(i, "Recipe " + i, i, ""));
+    @Override
+    public void onResume() {
+        super.onResume();
+        presenter.loadData();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (Util.SDK_INT > 23) {
+            presenter.detachView();
         }
+    }
 
-        adapter.setDatasource(dataSource);
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (Util.SDK_INT <= 23) {
+            presenter.detachView();
+        }
     }
 
     public void setRecipeAdapterListener(RecipesAdapter.Listener recipeAdapterListener) {
         this.recipeAdapterListener = recipeAdapterListener;
+    }
+
+    @Override
+    public void onRecipesLoaded(@NotNull List<? extends Recipe> recipes) {
+        adapter.setDatasource((List<Recipe>) recipes);
+    }
+
+    @Override
+    public void onRecipeLoadError() {
+
     }
 }
