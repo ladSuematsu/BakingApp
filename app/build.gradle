@@ -18,7 +18,7 @@ android {
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
-        buildConfigField STRING, "API_BASE_URL", "\"https://d17h27t6h515a5.cloudfront.net/\""
+        buildConfigField STRING, "API_BASE_URL", "\"http://go.udacity.com/\""
     }
 
     buildTypes {

@@ -1,9 +1,7 @@
 package com.ladsoft.bakingapp.data.repository
 
 
-import com.google.gson.GsonBuilder
-import com.google.gson.reflect.TypeToken
-import com.ladsoft.bakingapp.data.network.entity.RecipePayload
+import com.ladsoft.bakingapp.data.network.api.BakingAppApiModule
 import com.ladsoft.bakingapp.entity.Recipe
 import com.ladsoft.bakingapp.translator.RecipeTranslator
 
@@ -11,18 +9,29 @@ class RecipeRepository private constructor() {
 
     val recipes: List<Recipe>
         get() {
-            val gson = GsonBuilder()
-                    .excludeFieldsWithoutExposeAnnotation()
-                    .serializeNulls()
-                    .create()
+//            val gson = GsonBuilder()
+//                    .excludeFieldsWithoutExposeAnnotation()
+//                    .serializeNulls()
+//                    .create()
+//
+//
+//            val recipesType = object : TypeToken<List<RecipePayload>>() {}.type
+//            val recipePayloads = gson.fromJson<List<RecipePayload>>(rawJson, recipesType)
 
+            val api = BakingAppApiModule.provideApi()
 
-            val recipesType = object : TypeToken<List<RecipePayload>>() {}.type
-            val recipePayloads = gson.fromJson<List<RecipePayload>>(rawJson, recipesType)
+            val response = api.recipes().execute()
 
-            val translator = RecipeTranslator()
-            val recipes = recipePayloads.map {
-                translator.translate(it)
+            val recipes: List<Recipe>
+            if (!response.isSuccessful) {
+                throw Exception("Request unsuccessful. HTTP error ${response.code()}")
+            } else {
+                val recipePayloads = response.body()
+
+                val translator = RecipeTranslator()
+                recipes = recipePayloads.map {
+                    translator.translate(it)
+                }
             }
 
             return recipes
