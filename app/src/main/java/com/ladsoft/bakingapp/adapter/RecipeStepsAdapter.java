@@ -57,11 +57,12 @@ public class RecipeStepsAdapter extends RecyclerView.Adapter<RecipeStepsAdapter.
 
         StepViewHolder(View itemView) {
             super(itemView);
+            itemView.setOnClickListener(this);
             ButterKnife.bind(this, itemView);
         }
 
         public void setData(Step step) {
-            this.step.setText(step.getDescription());
+            this.step.setText(step.getShortDescription());
         }
 
         @Override

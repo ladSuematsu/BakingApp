@@ -12,12 +12,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.google.android.exoplayer2.util.Util;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.ladsoft.bakingapp.R;
 import com.ladsoft.bakingapp.adapter.RecipesAdapter;
-import com.ladsoft.bakingapp.data.network.entity.RecipePayload;
-import com.ladsoft.bakingapp.data.repository.RecipeRepository;
 import com.ladsoft.bakingapp.entity.Recipe;
 import com.ladsoft.bakingapp.mvp.model.RecipesModel;
 import com.ladsoft.bakingapp.mvp.presenter.RecipesPresenter;
@@ -26,7 +22,6 @@ import com.ladsoft.bakingapp.view.layoutmanager.decoration.SimplePaddingDecorati
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -85,7 +80,7 @@ public class RecipesFragment extends Fragment implements RecipeView {
     @Override
     public void onPause() {
         super.onPause();
-        if (Util.SDK_INT > 23) {
+        if (Util.SDK_INT <= 23) {
             presenter.detachView();
         }
     }
@@ -93,7 +88,7 @@ public class RecipesFragment extends Fragment implements RecipeView {
     @Override
     public void onStop() {
         super.onStop();
-        if (Util.SDK_INT <= 23) {
+        if (Util.SDK_INT > 23) {
             presenter.detachView();
         }
     }
