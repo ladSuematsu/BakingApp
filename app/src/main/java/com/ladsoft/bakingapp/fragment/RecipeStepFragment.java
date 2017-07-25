@@ -7,8 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,11 +22,11 @@ import com.google.android.exoplayer2.LoadControl;
 import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.Timeline;
+import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
+import com.google.android.exoplayer2.extractor.ExtractorsFactory;
+import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.TrackGroupArray;
-import com.google.android.exoplayer2.source.dash.DashChunkSource;
-import com.google.android.exoplayer2.source.dash.DashMediaSource;
-import com.google.android.exoplayer2.source.dash.DefaultDashChunkSource;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.trackselection.TrackSelector;
@@ -36,8 +35,8 @@ import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
-import com.google.android.exoplayer2.video.VideoRendererEventListener;
 import com.ladsoft.bakingapp.R;
+import com.ladsoft.bakingapp.entity.Step;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -47,12 +46,14 @@ public class RecipeStepFragment extends Fragment {
     private static final String TAG = RecipeStepFragment.class.getSimpleName();
 
     @BindView(R.id.step_description) TextView stepDescription;
+
     @BindView(R.id.media_player) SimpleExoPlayerView mediaPlayerView;
 
     private long playbackPosition;
+
     private int currentWindow;
     private boolean playWhenReady = true;
-
+    private MediaSource mediaSource;
     public static RecipeStepFragment newInstance() {
         return new RecipeStepFragment();
     }
@@ -71,22 +72,8 @@ public class RecipeStepFragment extends Fragment {
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
-    }
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-//        initializeMediaSession();
-//        setDataSource();
-    }
-
-    @Override
     public void onStart() {
+        Log.i("STEP_VID_PLAYER", "onStart");
         super.onStart();
 
         if (Util.SDK_INT > 23) {
@@ -96,6 +83,7 @@ public class RecipeStepFragment extends Fragment {
 
     @Override
     public void onResume() {
+        Log.i("STEP_VID_PLAYER", "onResume");
         super.onResume();
 
         if (Util.SDK_INT <= 23) {
@@ -105,22 +93,20 @@ public class RecipeStepFragment extends Fragment {
 
     @Override
     public void onPause() {
+        Log.i("STEP_VID_PLAYER", "onPause");
         super.onPause();
-        if (Util.SDK_INT > 23) {
+        if (Util.SDK_INT <= 23) {
             releasePlayer();
         }
     }
 
     @Override
     public void onStop() {
+        Log.i("STEP_VID_PLAYER", "onStop");
         super.onStop();
-        if (Util.SDK_INT <= 23) {
+        if (Util.SDK_INT > 23) {
             releasePlayer();
         }
-    }
-
-    public void setDataSource() {
-//        initializePlayer();
     }
 
     SimpleExoPlayer mediaPlayer;
@@ -138,10 +124,14 @@ public class RecipeStepFragment extends Fragment {
 
             mediaPlayer.setPlayWhenReady(playWhenReady);
             mediaPlayer.seekTo(currentWindow, playbackPosition);
+            mediaPlayerView.hideController();
         }
 
-        MediaSource mediaSource = buildMediaSource(Uri.parse(getString(R.string.media_url_dash)));
-        mediaPlayer.prepare(mediaSource, true, false);
+//        MediaSource mediaSource = buildMediaSource(Uri.parse(getString(R.string.media_url_dash)));
+
+        if (mediaSource != null) {
+            mediaPlayer.prepare(mediaSource, true, false);
+        }
 
 //        String userAgent = Util.getUserAgent(this, "ClassicalMusicQuiz");
 //        MediaSource mediaSource = new ExtractorMediaSource(mediaUri, new DefaultDataSourceFactory(
@@ -165,8 +155,11 @@ public class RecipeStepFragment extends Fragment {
     private static final DefaultBandwidthMeter BANDWIDTH_METER = new DefaultBandwidthMeter();
     private MediaSource buildMediaSource(Uri uri) {
         DataSource.Factory dataSourceFactory = new DefaultHttpDataSourceFactory("ua", BANDWIDTH_METER);
-        DashChunkSource.Factory dashChunkSourceFactory = new DefaultDashChunkSource.Factory(dataSourceFactory);
-        return new DashMediaSource(uri, dataSourceFactory, dashChunkSourceFactory, null, null);
+        ExtractorsFactory extractorsFactory = new DefaultExtractorsFactory();
+
+//        DashChunkSource.Factory dashChunkSourceFactory = new DefaultDashChunkSource.Factory(dataSourceFactory);
+//        return new DashMediaSource(uri, dataSourceFactory, dashChunkSourceFactory, null, null);
+        return new ExtractorMediaSource(uri, dataSourceFactory, extractorsFactory, null, null);
     }
 
 //    private void initializeMediaSession() {
@@ -222,6 +215,26 @@ public class RecipeStepFragment extends Fragment {
         @Override
         public void onPlaybackParametersChanged(PlaybackParameters playbackParameters) {}
     };
+
+    public void setDatasource(Step datasource) {
+        if (datasource == null) {
+            stepDescription.setText(null);
+            mediaSource.releaseSource();
+            mediaPlayer.clearVideoSurface();
+        } else {
+            stepDescription.setText(datasource.getDescription());
+
+            if (datasource.getVideoUrl() != null) {
+                Uri mediaUri = Uri.parse(datasource.getVideoUrl());
+                Log.i("STEP_VID_PLAYER", "Step media Uri: " + mediaUri.toString());
+
+                mediaSource = buildMediaSource(mediaUri);
+                initializePlayer();
+            }
+        }
+
+
+    }
 
     private class mediaSessionCallback extends MediaSessionCompat.Callback {
         @Override

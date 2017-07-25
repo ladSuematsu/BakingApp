@@ -16,6 +16,7 @@ import com.ladsoft.bakingapp.R;
 import com.ladsoft.bakingapp.adapter.RecipeIngredientsAdapter;
 import com.ladsoft.bakingapp.adapter.RecipeStepsAdapter;
 import com.ladsoft.bakingapp.entity.Ingredient;
+import com.ladsoft.bakingapp.entity.Recipe;
 import com.ladsoft.bakingapp.entity.Step;
 import com.ladsoft.bakingapp.view.layoutmanager.decoration.SimplePaddingDecoration;
 
@@ -68,31 +69,14 @@ public class RecipeFragment extends Fragment {
         steps.setAdapter(stepsAdapter);
     }
 
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-        setIngredientsDataSource();
-        setStepsDataSource();
-    }
-
     public void setListener(RecipeStepsAdapter.Listener listener) {
         this.listener = listener;
     }
 
-    public void setIngredientsDataSource() {
-        List<Ingredient> dataSource = new ArrayList<>();
-        for(int i = 1; i <= 5; i++) {
-            dataSource.add(new Ingredient(i, 1, i, "CUP", "Ingredient " + i));
-        }
-        ingredientsAdapter.setDatasource(dataSource);
-    }
+    public void setDatasource(Recipe recipe) {
+        if (recipe == null) { return; }
 
-    public void setStepsDataSource() {
-        List<Step> dataSource = new ArrayList<>();
-        for(int i = 0; i < 5; i++) {
-            dataSource.add(new Step(i, i, 1, "Step short description " + i, "Step Long description", "", ""));
-        }
-        stepsAdapter.setDatasource(dataSource);
+        ingredientsAdapter.setDatasource(recipe.getIngredients());
+        stepsAdapter.setDatasource(recipe.getSteps());
     }
 }

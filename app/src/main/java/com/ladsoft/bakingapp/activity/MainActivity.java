@@ -8,6 +8,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.widget.FrameLayout;
 
 import com.ladsoft.bakingapp.R;
+import com.ladsoft.bakingapp.adapter.RecipesAdapter;
+import com.ladsoft.bakingapp.entity.Recipe;
 import com.ladsoft.bakingapp.fragment.RecipesFragment;
 
 import butterknife.BindView;
@@ -26,18 +28,25 @@ public class MainActivity extends AppCompatActivity {
 
         if(savedInstanceState == null) {
             setupFragments();
-
-//            startActivity(new Intent(this, RecipeActivity.class));
-            startActivity(new Intent(this, RecipeStepActivity.class));
         }
     }
 
     private void setupFragments() {
         recipesFragment = RecipesFragment.newInstance();
+        recipesFragment.setRecipeAdapterListener(listener);
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
                 .replace(content.getId(), recipesFragment)
                 .commit();
     }
+
+    private RecipesAdapter.Listener listener = new RecipesAdapter.Listener() {
+        @Override
+        public void onItemClickListener(Recipe recipe) {
+            Intent intent = new Intent(MainActivity.this, RecipeActivity.class);
+            intent.putExtra(RecipeActivity.EXTRA_RECIPE, recipe);
+            startActivity(intent);
+        }
+    };
 }
