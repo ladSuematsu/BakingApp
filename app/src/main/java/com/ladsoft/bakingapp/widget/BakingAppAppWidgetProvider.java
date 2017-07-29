@@ -9,6 +9,7 @@ import android.widget.RemoteViews;
 
 import com.ladsoft.bakingapp.R;
 import com.ladsoft.bakingapp.activity.MainActivity;
+import com.ladsoft.bakingapp.widget.remoteviewsservice.IngredientsListWidgetService;
 
 /**
  * Implementation of App Widget functionality.
@@ -19,7 +20,7 @@ public class BakingAppAppWidgetProvider extends AppWidgetProvider {
                                 int appWidgetId) {
 
 
-        RemoteViews views = getWidgetView(context);
+        RemoteViews views = getListRemoteView(context);
 
 
         // Instruct the widget manager to update the widget
@@ -44,12 +45,15 @@ public class BakingAppAppWidgetProvider extends AppWidgetProvider {
         // Enter relevant functionality for when the last widget is disabled
     }
 
-    public static RemoteViews getWidgetView(Context context) {
+    public static RemoteViews getListRemoteView(Context context) {
         CharSequence widgetText = context.getString(R.string.appwidget_test_text);
 
         // Construct the RemoteViews object
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.baking_app_app_widget);
         views.setTextViewText(R.id.appwidget_text, widgetText);
+
+        Intent listAdapterIntent = new Intent(context, IngredientsListWidgetService.class);
+        views.setRemoteAdapter(R.id.appwidget_list, listAdapterIntent);
 
         Intent recipeIntent = new Intent(context, MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, recipeIntent, PendingIntent.FLAG_UPDATE_CURRENT);
