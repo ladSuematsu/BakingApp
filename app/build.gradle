@@ -4,6 +4,7 @@ apply plugin: 'kotlin-android-extensions'
 
 android {
     String STRING = "String"
+    String P_INT = "int"
 
     compileSdkVersion rootProject.compiledSdkVersion
     buildToolsVersion rootProject.buildToolsVersion
@@ -16,7 +17,11 @@ android {
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
+        buildConfigField STRING, "DB_NAME", "\"bakingapp\""
+        buildConfigField P_INT, "DB_VERSION", "1"
+
         buildConfigField STRING, "API_BASE_URL", "\"http://go.udacity.com/\""
+
     }
 
     buildTypes {
