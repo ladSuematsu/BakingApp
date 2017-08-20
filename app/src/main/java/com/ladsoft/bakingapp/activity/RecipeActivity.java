@@ -15,6 +15,8 @@ import com.ladsoft.bakingapp.adapter.RecipeStepsAdapter;
 import com.ladsoft.bakingapp.entity.Recipe;
 import com.ladsoft.bakingapp.entity.Step;
 import com.ladsoft.bakingapp.fragment.RecipeFragment;
+import com.ladsoft.bakingapp.manager.SessionManager;
+import com.ladsoft.bakingapp.service.IngredientUpdateService;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -45,7 +47,12 @@ public class RecipeActivity extends AppCompatActivity {
 
         if (activityCreation) {
             Intent intent = getIntent();
-            recipeFragment.setDatasource((Recipe) intent.getParcelableExtra(EXTRA_RECIPE));
+            Recipe recipe = intent.getParcelableExtra(EXTRA_RECIPE);
+
+            SessionManager.INSTANCE.setLastSelectedReceiptId(recipe.getId());
+            startService(new Intent(this, IngredientUpdateService.class));
+
+            recipeFragment.setDatasource(recipe);
             activityCreation = false;
         }
     }

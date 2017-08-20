@@ -9,6 +9,7 @@ import android.widget.RemoteViews;
 
 import com.ladsoft.bakingapp.R;
 import com.ladsoft.bakingapp.activity.MainActivity;
+import com.ladsoft.bakingapp.manager.SessionManager;
 import com.ladsoft.bakingapp.widget.remoteviewsservice.IngredientsListWidgetService;
 
 /**
@@ -45,7 +46,7 @@ public class BakingAppAppWidgetProvider extends AppWidgetProvider {
         // Enter relevant functionality for when the last widget is disabled
     }
 
-    public static RemoteViews getListRemoteView(Context context) {
+    private static RemoteViews getListRemoteView(Context context) {
         CharSequence widgetText = context.getString(R.string.appwidget_test_text);
 
         // Construct the RemoteViews object
@@ -60,6 +61,12 @@ public class BakingAppAppWidgetProvider extends AppWidgetProvider {
         views.setOnClickPendingIntent(R.id.widget_root_view, pendingIntent);
 
         return views;
+    }
+
+    public static void updateAppWidgets (Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
+        for (int widgetId : appWidgetIds) {
+            updateAppWidget(context, appWidgetManager, widgetId);
+        }
     }
 }
 

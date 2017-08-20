@@ -25,7 +25,7 @@ class RecipesModel  {
 
     fun loadRecipes() {
         taskHandler.postTask(Runnable {
-            val recipes = RecipeRepository.Companion.instance.recipes
+            val recipes = RecipeRepository.recipes
 
             handler.post( {
                 if (recipes.isEmpty()) {

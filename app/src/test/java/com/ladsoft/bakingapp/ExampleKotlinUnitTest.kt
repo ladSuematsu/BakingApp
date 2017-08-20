@@ -6,11 +6,10 @@ import kotlin.test.assertFalse
 
 
 class ExampleKotlinUnitTest {
-    private val recipeRepository = RecipeRepository.instance
 
     @Test
     fun recipeRepositoryTest() {
-        val recipes = recipeRepository.recipes
+        val recipes = RecipeRepository.recipes
         assertFalse(recipes.isEmpty())
     }
 }

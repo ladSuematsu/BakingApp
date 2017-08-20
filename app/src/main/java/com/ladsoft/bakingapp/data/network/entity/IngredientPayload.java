@@ -15,7 +15,7 @@ public class IngredientPayload {
     @Expose @SerializedName("measure")
     private String measure;
 
-    @Expose @SerializedName("description")
+    @Expose @SerializedName("ingredient")
     private String description;
 
     public long getId() {

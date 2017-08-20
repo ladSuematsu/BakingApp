@@ -6,13 +6,18 @@ import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
 import com.ladsoft.bakingapp.R;
+import com.ladsoft.bakingapp.data.repository.RecipeRepository;
+import com.ladsoft.bakingapp.entity.Ingredient;
+import com.ladsoft.bakingapp.entity.Recipe;
+import com.ladsoft.bakingapp.manager.SessionManager;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 
 public class IngredientsListWidgetService extends RemoteViewsService {
+    public static final String EXTRA_RECIPE_ID = "extra_recipe_id";
+
     @Override
     public RemoteViewsFactory onGetViewFactory(Intent intent) {
         return new ListRemoteViewsFactory(this);
@@ -22,9 +27,9 @@ public class IngredientsListWidgetService extends RemoteViewsService {
 class ListRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 
     private final Context context;
-    private List<String> ingredients;
+    private List<Ingredient> ingredients;
 
-    public ListRemoteViewsFactory(Context context) {
+    ListRemoteViewsFactory(Context context) {
         this.context = context.getApplicationContext();
         this.ingredients = new ArrayList<>();
     }
@@ -36,8 +41,15 @@ class ListRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 
     @Override
     public void onDataSetChanged() {
-        // TODO: update the internal list with the selected recipe ingredients list
-        ingredients = Arrays.asList("Eggs", "Milk", "Sugar", "Salt", "Baking powder");
+        long lastSelectedReceiptId = SessionManager.INSTANCE.getLastSelectedReceiptId().invoke();
+
+        List<Recipe> recipes= RecipeRepository.INSTANCE.getRecipes();
+        for (Recipe recipe : recipes) {
+            if (recipe.getId() == lastSelectedReceiptId) {
+                ingredients = recipe.getIngredients();
+                break;
+            }
+        }
     }
 
     @Override
@@ -54,8 +66,10 @@ class ListRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
     public RemoteViews getViewAt(int position) {
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_item_recipe_ingredient);
 
-        String ingredientName = ingredients.get(position);
-        views.setTextViewText(R.id.ingredient, ingredientName);
+        Ingredient ingredient = ingredients.get(position);
+        views.setTextViewText(R.id.ingredient, ingredient.getDescription());
+        views.setTextViewText(R.id.quantity, String.valueOf(ingredient.getQuantity()));
+        views.setTextViewText(R.id.measure, ingredient.getMeasure());
 
         return views;
     }
