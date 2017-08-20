@@ -10,6 +10,7 @@ buildscript {
 
         // App dependendencies
         supportLibraryVersion = '26.0.1'
+        roomVersion = '1.0.0-alpha9'
         kotlinVersion = '1.1.4'
         daggerVersion = '2.11'
     }
