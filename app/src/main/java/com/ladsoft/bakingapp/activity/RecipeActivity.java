@@ -8,15 +8,19 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.FrameLayout;
-import android.widget.Toast;
 
 import com.ladsoft.bakingapp.R;
 import com.ladsoft.bakingapp.adapter.RecipeStepsAdapter;
+import com.ladsoft.bakingapp.application.BakingAppApplication;
+import com.ladsoft.bakingapp.di.component.DaggerRecipeComponent;
+import com.ladsoft.bakingapp.di.module.RecipeModule;
 import com.ladsoft.bakingapp.entity.Recipe;
 import com.ladsoft.bakingapp.entity.Step;
 import com.ladsoft.bakingapp.fragment.RecipeFragment;
 import com.ladsoft.bakingapp.manager.SessionManager;
 import com.ladsoft.bakingapp.service.IngredientUpdateService;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -24,6 +28,8 @@ import butterknife.ButterKnife;
 
 public class RecipeActivity extends AppCompatActivity {
     public static final String EXTRA_RECIPE = "extra_recipe";
+
+    @Inject SessionManager sessionManager;
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.content) FrameLayout content;
 
@@ -37,8 +43,16 @@ public class RecipeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_recipe);
         ButterKnife.bind(this);
 
+        setupComponent(this);
+
         setupViews();
         setupFragments();
+
+        DaggerRecipeComponent.builder()
+                .appComponent(BakingAppApplication.Companion.get(this).getAppComponent())
+                .recipeModule(new RecipeModule())
+                .build()
+                .inject(this);
     }
 
     @Override
@@ -49,7 +63,7 @@ public class RecipeActivity extends AppCompatActivity {
             Intent intent = getIntent();
             Recipe recipe = intent.getParcelableExtra(EXTRA_RECIPE);
 
-            SessionManager.INSTANCE.setLastSelectedReceiptId(recipe.getId());
+            sessionManager.setLastSelectedReceiptId(recipe.getId());
             startService(new Intent(this, IngredientUpdateService.class));
 
             recipeFragment.setDatasource(recipe);
@@ -89,4 +103,9 @@ public class RecipeActivity extends AppCompatActivity {
             startActivity(intent);
         }
     };
+
+    public void setupComponent(RecipeActivity activity) {
+//        DaggerAppComponent.builder()
+//                .
+    }
 }

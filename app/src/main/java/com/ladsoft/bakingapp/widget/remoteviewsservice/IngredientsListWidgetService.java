@@ -14,6 +14,8 @@ import com.ladsoft.bakingapp.manager.SessionManager;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 
 public class IngredientsListWidgetService extends RemoteViewsService {
     public static final String EXTRA_RECIPE_ID = "extra_recipe_id";
@@ -25,6 +27,7 @@ public class IngredientsListWidgetService extends RemoteViewsService {
 }
 
 class ListRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
+    @Inject SessionManager sessionManager;
 
     private final Context context;
     private List<Ingredient> ingredients;
@@ -41,7 +44,7 @@ class ListRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 
     @Override
     public void onDataSetChanged() {
-        long lastSelectedReceiptId = SessionManager.INSTANCE.getLastSelectedReceiptId().invoke();
+        long lastSelectedReceiptId = sessionManager.getLastSelectedReceiptId().invoke();
 
         List<Recipe> recipes= RecipeRepository.INSTANCE.getRecipes();
         for (Recipe recipe : recipes) {
