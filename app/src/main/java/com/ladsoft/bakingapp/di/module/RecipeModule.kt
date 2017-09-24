@@ -8,4 +8,8 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Module
-class RecipeModule
+class RecipeModule {
+
+
+
+}

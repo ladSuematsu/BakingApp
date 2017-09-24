@@ -12,8 +12,6 @@ import android.widget.FrameLayout;
 import com.ladsoft.bakingapp.R;
 import com.ladsoft.bakingapp.adapter.RecipeStepsAdapter;
 import com.ladsoft.bakingapp.application.BakingAppApplication;
-import com.ladsoft.bakingapp.di.component.DaggerRecipeComponent;
-import com.ladsoft.bakingapp.di.module.RecipeModule;
 import com.ladsoft.bakingapp.entity.Recipe;
 import com.ladsoft.bakingapp.entity.Step;
 import com.ladsoft.bakingapp.fragment.RecipeFragment;
@@ -47,12 +45,6 @@ public class RecipeActivity extends AppCompatActivity {
 
         setupViews();
         setupFragments();
-
-        DaggerRecipeComponent.builder()
-                .appComponent(BakingAppApplication.Companion.get(this).getAppComponent())
-                .recipeModule(new RecipeModule())
-                .build()
-                .inject(this);
     }
 
     @Override
@@ -105,7 +97,6 @@ public class RecipeActivity extends AppCompatActivity {
     };
 
     public void setupComponent(RecipeActivity activity) {
-//        DaggerAppComponent.builder()
-//                .
+        BakingAppApplication.appComponent.inject(this);
     }
 }
