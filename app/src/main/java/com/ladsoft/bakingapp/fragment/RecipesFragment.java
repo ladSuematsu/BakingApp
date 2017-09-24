@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import com.google.android.exoplayer2.util.Util;
 import com.ladsoft.bakingapp.R;
 import com.ladsoft.bakingapp.adapter.RecipesAdapter;
+import com.ladsoft.bakingapp.application.BakingAppApplication;
 import com.ladsoft.bakingapp.entity.Recipe;
 import com.ladsoft.bakingapp.mvp.model.RecipesModel;
 import com.ladsoft.bakingapp.mvp.presenter.RecipesPresenter;
@@ -28,7 +29,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class RecipesFragment extends Fragment implements RecipeView {
-
     @BindView(R.id.recipes) RecyclerView recipes;
     private RecipesAdapter adapter;
     private RecipesAdapter.Listener recipeAdapterListener;
@@ -36,6 +36,10 @@ public class RecipesFragment extends Fragment implements RecipeView {
 
     public static RecipesFragment newInstance() {
         return new RecipesFragment();
+    }
+
+    public RecipesFragment() {
+        BakingAppApplication.appComponent.inject(this);
     }
 
     @Override

@@ -10,9 +10,7 @@ import android.view.View;
 import android.widget.FrameLayout;
 
 import com.ladsoft.bakingapp.R;
-import com.ladsoft.bakingapp.entity.Recipe;
 import com.ladsoft.bakingapp.entity.Step;
-import com.ladsoft.bakingapp.fragment.RecipeFragment;
 import com.ladsoft.bakingapp.fragment.RecipeStepFragment;
 
 import butterknife.BindView;

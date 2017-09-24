@@ -1,7 +1,8 @@
 package com.ladsoft.bakingapp.application
 
 import android.app.Application
-import com.ladsoft.bakingapp.manager.SessionManager
+import android.content.Context
+import com.ladsoft.bakingapp.di.component.AppComponent
 
 
 class BakingAppApplication: Application() {
@@ -9,6 +10,11 @@ class BakingAppApplication: Application() {
     override fun onCreate() {
         super.onCreate()
 
-        SessionManager.initialize(this)
+        appComponent = AppComponent.Initializer.initialize(this)
+    }
+
+    companion object {
+        fun get(context : Context) : BakingAppApplication = context.getApplicationContext() as BakingAppApplication
+        lateinit var appComponent : AppComponent
     }
 }
