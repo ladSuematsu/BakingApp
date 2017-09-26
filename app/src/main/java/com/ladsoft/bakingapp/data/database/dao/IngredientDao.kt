@@ -11,14 +11,24 @@ interface IngredientDao {
     @Query(QUERY_SELECT_ALL)
     fun getAll(): List<IngredientRecord>
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun add(recipe: IngredientRecord)
+    @Query(QUERY_SELECT_BY_RECIPE_ID)
+    fun getByRecipeId(recipeId : Long): List<IngredientRecord>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun add(recipes: List<IngredientRecord>)
+    fun add(ingredient: IngredientRecord)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun add(ingredients: List<IngredientRecord>)
 
     private companion object {
         const val QUERY_SELECT_ALL =
-                "SELECT * FROM " + IngredientRecord.TABLE_NAME
+                "SELECT * FROM ${IngredientRecord.TABLE_NAME}"
+
+        const val QUERY_SELECT_BY_RECIPE_ID =
+                """
+                SELECT * FROM ${IngredientRecord.TABLE_NAME}
+                WHERE ${IngredientRecord.RECIPE_ID_COLUMN_NAME} = :recipeId
+                ORDER BY ${IngredientRecord.ID_COLUMN_NAME}
+                """
     }
 }

@@ -11,14 +11,25 @@ interface StepDao {
     @Query(QUERY_SELECT_ALL)
     fun getAll(): List<StepRecord>
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun add(recipe: StepRecord)
+    @Query(QUERY_SELECT_BY_RECIPE_ID)
+    fun getByRecipeId(recipeId : Long): List<StepRecord>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun add(recipes: List<StepRecord>)
+    fun add(step: StepRecord)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun add(step: List<StepRecord>)
 
     private companion object {
         const val QUERY_SELECT_ALL =
-                "SELECT * FROM " + StepRecord.TABLE_NAME
+                "SELECT * FROM ${StepRecord.TABLE_NAME}"
+
+        const val QUERY_SELECT_BY_RECIPE_ID =
+                """
+                SELECT * FROM ${StepRecord.TABLE_NAME}
+                WHERE ${StepRecord.RECIPE_ID_COLUMN_NAME} = :recipeId
+                ORDER BY ${StepRecord.STEP_ID_COLUMN_NAME} DESC
+                """
+
     }
 }

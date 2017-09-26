@@ -19,6 +19,6 @@ interface RecipeDao {
 
     private companion object {
         const val QUERY_SELECT_ALL =
-                "SELECT * FROM " + RecipeRecord.TABLE_NAME
+                "SELECT * FROM ${RecipeRecord.TABLE_NAME}"
     }
 }
