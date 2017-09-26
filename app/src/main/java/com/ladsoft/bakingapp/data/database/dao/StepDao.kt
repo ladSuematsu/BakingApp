@@ -4,21 +4,21 @@ import android.arch.persistence.room.Dao
 import android.arch.persistence.room.Insert
 import android.arch.persistence.room.OnConflictStrategy
 import android.arch.persistence.room.Query
-import com.ladsoft.bakingapp.data.database.entity.RecipeRecord
+import com.ladsoft.bakingapp.data.database.entity.StepRecord
 
 @Dao
-interface RecipeDao {
+interface StepDao {
     @Query(QUERY_SELECT_ALL)
-    fun getAll(): List<RecipeRecord>
+    fun getAll(): List<StepRecord>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun add(recipe: RecipeRecord)
+    fun add(recipe: StepRecord)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun add(recipes: List<RecipeRecord>)
+    fun add(recipes: List<StepRecord>)
 
     private companion object {
         const val QUERY_SELECT_ALL =
-                "SELECT * FROM " + RecipeRecord.TABLE_NAME
+                "SELECT * FROM " + StepRecord.TABLE_NAME
     }
 }
