@@ -48,7 +48,7 @@ public class IngredientsListWidgetService extends RemoteViewsService {
         public void onDataSetChanged() {
             long lastSelectedReceiptId = sessionManager.getLastSelectedReceiptId().invoke();
 
-            List<Recipe> recipes= repository.INSTANCE.getRecipes();
+            List<Recipe> recipes= repository.recipes();
             for (Recipe recipe : recipes) {
                 if (recipe.getId() == lastSelectedReceiptId) {
                     ingredients = recipe.getIngredients();

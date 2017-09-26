@@ -11,7 +11,7 @@ import javax.inject.Singleton
 class RepositoryModule {
 
     @Provides @Singleton
-    fun providesRecipeRepository(): RecipeRepository = RecipeRepository
+    fun providesRecipeRepository(): RecipeRepository = RecipeRepository()
 
     @Provides @Singleton
     fun providesLocalRecipeRepository(appDatabase: AppDatabase): DatabaseRecipeRepository = DatabaseRecipeRepository(appDatabase)
