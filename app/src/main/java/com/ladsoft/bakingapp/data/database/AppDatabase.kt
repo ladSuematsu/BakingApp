@@ -5,13 +5,19 @@ import android.arch.persistence.room.Room
 import android.arch.persistence.room.RoomDatabase
 import android.content.Context
 import com.ladsoft.bakingapp.BuildConfig
+import com.ladsoft.bakingapp.data.database.dao.IngredientDao
 import com.ladsoft.bakingapp.data.database.dao.RecipeDao
+import com.ladsoft.bakingapp.data.database.dao.StepDao
+import com.ladsoft.bakingapp.data.database.entity.IngredientRecord
 import com.ladsoft.bakingapp.data.database.entity.RecipeRecord
+import com.ladsoft.bakingapp.data.database.entity.StepRecord
 
-@Database(entities = arrayOf(RecipeRecord::class),
+@Database(entities = arrayOf(RecipeRecord::class, IngredientRecord::class, StepRecord::class),
             version = AppDatabase.DB_VERSION)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun recipeDao(): RecipeDao
+    abstract fun ingredientDao(): IngredientDao
+    abstract fun stepDao(): StepDao
 
     companion object {
         const val DB_NAME = BuildConfig.DB_NAME

@@ -9,13 +9,16 @@ import com.ladsoft.bakingapp.data.database.entity.RecipeRecord
 @Dao
 interface RecipeDao {
     @Query(QUERY_SELECT_ALL)
-    fun getAllRecipe(): List<RecipeRecord>
+    fun getAll(): List<RecipeRecord>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun addRecipe(recipe: RecipeRecord)
+    fun add(recipe: RecipeRecord)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun add(recipes: List<RecipeRecord>)
 
     private companion object {
         const val QUERY_SELECT_ALL =
-                "SELECT * FROM " + RecipeRecord.RECIPE_TABLE_NAME
+                "SELECT * FROM ${RecipeRecord.TABLE_NAME}"
     }
 }
