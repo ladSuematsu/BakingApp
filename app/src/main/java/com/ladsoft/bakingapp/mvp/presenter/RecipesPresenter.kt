@@ -10,15 +10,29 @@ class RecipesPresenter(val model: RecipesModel): Presenter<RecipeView>(), Recipe
     }
 
     fun loadData() {
+        view?.showRefresh(true)
         model.loadRecipes()
+    }
+
+    override fun detachView() {
+        view?.showRefresh(false)
+        super.detachView()
     }
 
     override fun onDataLoaded(recipes: List<Recipe>) {
         view?.onRecipesLoaded(recipes)
+        view?.showRefresh(false)
     }
 
     override fun onDataLoadError() {
         view?.onRecipeLoadError()
+        view?.showRefresh(false)
+    }
+
+    override fun onDataLoadError(recipes: List<Recipe>) {
+        view?.onRecipeLoadError()
+        view?.onRecipesLoaded(recipes)
+        view?.showRefresh(false)
     }
 }
 

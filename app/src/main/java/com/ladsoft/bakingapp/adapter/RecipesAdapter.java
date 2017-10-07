@@ -44,7 +44,11 @@ public class RecipesAdapter extends RecyclerView.Adapter<RecipesAdapter.RecipeVi
 
     public void setDatasource(List<Recipe> datasource) {
         this.datasource.clear();
-        this.datasource = datasource;
+
+        if (datasource != null) {
+            this.datasource = datasource;
+        }
+
         notifyDataSetChanged();
     }
 
