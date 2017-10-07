@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onItemClickListener(Recipe recipe) {
             Intent intent = new Intent(MainActivity.this, RecipeActivity.class);
-            intent.putExtra(RecipeActivity.EXTRA_RECIPE, recipe);
+            intent.putExtra(RecipeActivity.EXTRA_RECIPE_ID, recipe);
             startActivity(intent);
         }
     };

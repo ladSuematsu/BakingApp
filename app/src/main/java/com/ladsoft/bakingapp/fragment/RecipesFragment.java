@@ -17,9 +17,9 @@ import com.ladsoft.bakingapp.R;
 import com.ladsoft.bakingapp.adapter.RecipesAdapter;
 import com.ladsoft.bakingapp.application.BakingAppApplication;
 import com.ladsoft.bakingapp.entity.Recipe;
+import com.ladsoft.bakingapp.mvp.RecipesMvp;
 import com.ladsoft.bakingapp.mvp.model.RecipesModel;
 import com.ladsoft.bakingapp.mvp.presenter.RecipesPresenter;
-import com.ladsoft.bakingapp.mvp.view.RecipeView;
 import com.ladsoft.bakingapp.util.UiUtils;
 import com.ladsoft.bakingapp.view.layoutmanager.decoration.SimplePaddingDecoration;
 
@@ -30,7 +30,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class RecipesFragment extends Fragment implements RecipeView, SwipeRefreshLayout.OnRefreshListener {
+public class RecipesFragment extends Fragment implements RecipesMvp.View, SwipeRefreshLayout.OnRefreshListener {
     @BindView(R.id.recipes) RecyclerView recipes;
     @BindView(R.id.refresh) SwipeRefreshLayout refresh;
     private RecipesAdapter adapter;

@@ -7,13 +7,13 @@ import com.ladsoft.bakingapp.data.database.repository.DatabaseIngredientReposito
 import com.ladsoft.bakingapp.data.database.repository.DatabaseRecipeRepository
 import com.ladsoft.bakingapp.data.database.repository.DatabaseStepRepository
 import com.ladsoft.bakingapp.data.repository.RecipeRepository
-import com.ladsoft.bakingapp.entity.Recipe
+import com.ladsoft.bakingapp.mvp.RecipesMvp
 import javax.inject.Inject
 
 
-class RecipesModel  {
+class RecipesModel: RecipesMvp.Model {
     val LOG_TAG = RecipesModel::class.java.simpleName
-    var recipesModelListener: RecipesModelListener? = null
+    var recipesModelListener: RecipesMvp.Model.Callback? = null
     val handler = Handler()
     val taskHandler = TaskHandler()
     @Inject lateinit var recipesRepository: RecipeRepository
@@ -28,15 +28,15 @@ class RecipesModel  {
     }
 
 
-    fun setListener(listener: RecipesModelListener) {
+    override fun setListener(listener: RecipesMvp.Model.Callback) {
         recipesModelListener = listener
     }
 
-    fun detachRecipesModelListener() {
+    override fun detachRecipesModelListener() {
         recipesModelListener = null
     }
 
-    fun loadRecipes() {
+    override fun loadRecipes() {
         taskHandler.postTask(Runnable {
             try {
                 val recipes = recipesRepository.recipes()
@@ -70,11 +70,5 @@ class RecipesModel  {
                 }
             }
         })
-    }
-
-    interface RecipesModelListener {
-        fun onDataLoaded(recipes: List<Recipe>)
-        fun onDataLoadError(recipes: List<Recipe>)
-        fun onDataLoadError()
     }
 }
