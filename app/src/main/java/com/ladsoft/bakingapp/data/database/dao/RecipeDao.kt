@@ -17,8 +17,23 @@ interface RecipeDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun add(recipes: List<RecipeRecord>)
 
+    @Query(QUERY_DELETE_ALL)
+    fun deleteAll()
+
+    @Query(QUERY_DELETE_NOT_IN)
+    fun deletePreserving(preserveIds : List<Long>)
+
     private companion object {
+
         const val QUERY_SELECT_ALL =
                 "SELECT * FROM ${RecipeRecord.TABLE_NAME}"
+
+        const val QUERY_DELETE_ALL =
+                """
+                DELETE FROM ${RecipeRecord.TABLE_NAME}
+                """
+
+        const val QUERY_DELETE_NOT_IN =
+                "DELETE FROM ${RecipeRecord.TABLE_NAME} WHERE ${RecipeRecord.ID_COLUMN_NAME} NOT IN (:preserveIds)"
     }
 }

@@ -20,6 +20,9 @@ interface StepDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun add(step: List<StepRecord>)
 
+    @Query(QUERY_DELETE_ALL_BY_RECIPE_ID)
+    fun deleteAllByRecipeId(recipeId : Long)
+
     private companion object {
         const val QUERY_SELECT_ALL =
                 "SELECT * FROM ${StepRecord.TABLE_NAME}"
@@ -28,8 +31,13 @@ interface StepDao {
                 """
                 SELECT * FROM ${StepRecord.TABLE_NAME}
                 WHERE ${StepRecord.RECIPE_ID_COLUMN_NAME} = :recipeId
-                ORDER BY ${StepRecord.STEP_ID_COLUMN_NAME} DESC
+                ORDER BY ${StepRecord.ID_COLUMN_NAME} DESC
                 """
 
+        const val QUERY_DELETE_ALL_BY_RECIPE_ID =
+                """
+                DELETE FROM ${StepRecord.TABLE_NAME}
+                WHERE ${StepRecord.RECIPE_ID_COLUMN_NAME} = :recipeId
+                """
     }
 }

@@ -19,7 +19,7 @@ class DatabaseStepRepository(val appDatabase: AppDatabase) {
         return steps
     }
 
-    fun insertRecipes(steps: List<Step>) {
+    fun insert(steps: List<Step>) {
         val dao = appDatabase.stepDao()
 
         val translator = StepRecordTranslator()
@@ -28,5 +28,11 @@ class DatabaseStepRepository(val appDatabase: AppDatabase) {
         })
 
         dao.add(records)
+    }
+
+    fun deleteAllByRecipeId(recipeId: Long) {
+        val dao = appDatabase.stepDao()
+
+        dao.deleteAllByRecipeId(recipeId)
     }
 }

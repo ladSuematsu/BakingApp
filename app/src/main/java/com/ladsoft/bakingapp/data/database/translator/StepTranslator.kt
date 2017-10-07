@@ -6,6 +6,6 @@ import com.ladsoft.bakingapp.translator.Translator
 
 class StepTranslator: Translator<StepRecord, Step> {
     override fun translate(source: StepRecord): Step{
-        return Step(source.id, source.recipeId, source.stepId, source.shortDescription, source.description, source.videoUrl, source.thumbnailUrl)
+        return Step(source.id, source.recipeId, source.shortDescription, source.description, source.videoUrl, source.thumbnailUrl)
     }
 }

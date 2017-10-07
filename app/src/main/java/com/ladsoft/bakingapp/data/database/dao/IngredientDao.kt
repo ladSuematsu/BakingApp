@@ -1,9 +1,6 @@
 package com.ladsoft.bakingapp.data.database.dao
 
-import android.arch.persistence.room.Dao
-import android.arch.persistence.room.Insert
-import android.arch.persistence.room.OnConflictStrategy
-import android.arch.persistence.room.Query
+import android.arch.persistence.room.*
 import com.ladsoft.bakingapp.data.database.entity.IngredientRecord
 
 @Dao
@@ -20,6 +17,9 @@ interface IngredientDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun add(ingredients: List<IngredientRecord>)
 
+    @Query(QUERY_DELETE_ALL_BY_RECIPE_ID)
+    fun deleteAllByRecipeId(recipeId : Long)
+
     private companion object {
         const val QUERY_SELECT_ALL =
                 "SELECT * FROM ${IngredientRecord.TABLE_NAME}"
@@ -29,6 +29,12 @@ interface IngredientDao {
                 SELECT * FROM ${IngredientRecord.TABLE_NAME}
                 WHERE ${IngredientRecord.RECIPE_ID_COLUMN_NAME} = :recipeId
                 ORDER BY ${IngredientRecord.ID_COLUMN_NAME}
+                """
+
+        const val QUERY_DELETE_ALL_BY_RECIPE_ID =
+                """
+                DELETE FROM ${IngredientRecord.TABLE_NAME}
+                WHERE ${IngredientRecord.RECIPE_ID_COLUMN_NAME} = :recipeId
                 """
     }
 }

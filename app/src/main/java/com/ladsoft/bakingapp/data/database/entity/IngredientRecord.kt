@@ -2,11 +2,24 @@ package com.ladsoft.bakingapp.data.database.entity
 
 import android.arch.persistence.room.ColumnInfo
 import android.arch.persistence.room.Entity
-import android.arch.persistence.room.PrimaryKey
+import android.arch.persistence.room.ForeignKey
+import android.arch.persistence.room.Index
 
-@Entity(tableName = IngredientRecord.TABLE_NAME)
+@Entity(tableName = IngredientRecord.TABLE_NAME,
+    primaryKeys = arrayOf(IngredientRecord.ID_COLUMN_NAME, IngredientRecord.RECIPE_ID_COLUMN_NAME),
+    foreignKeys = arrayOf(
+            ForeignKey(entity = RecipeRecord::class,
+                parentColumns = arrayOf(RecipeRecord.ID_COLUMN_NAME),
+                childColumns = arrayOf(IngredientRecord.RECIPE_ID_COLUMN_NAME),
+                onDelete = ForeignKey.CASCADE
+            )
+        ),
+    indices = arrayOf(
+            Index(value = *arrayOf(IngredientRecord.RECIPE_ID_COLUMN_NAME, IngredientRecord.ID_COLUMN_NAME), unique = true)
+        )
+)
 data class IngredientRecord(
-        @PrimaryKey @ColumnInfo(name = ID_COLUMN_NAME) val id: Long,
+        @ColumnInfo(name = ID_COLUMN_NAME) val id: Long,
         @ColumnInfo(name = RECIPE_ID_COLUMN_NAME) val recipeId: Long,
         @ColumnInfo(name = QUANTITY_COLUMN_NAME) val quantity: Double,
         @ColumnInfo(name = MEASURE_COLUMN_NAME) val measure: String,
