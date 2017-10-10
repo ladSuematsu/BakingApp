@@ -1,4 +1,5 @@
 <resources>
     <string name="recipe_label_ingredients_list">Ingredients</string>
     <string name="recipe_label_steps_list">Steps</string>
+    <string name="recipe_error_generic">Something went wrong</string>
 </resources>

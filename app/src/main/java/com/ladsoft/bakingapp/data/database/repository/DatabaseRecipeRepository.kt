@@ -1,6 +1,7 @@
 package com.ladsoft.bakingapp.data.database.repository
 
 import com.ladsoft.bakingapp.data.database.AppDatabase
+import com.ladsoft.bakingapp.data.database.entity.RecipeRecord
 import com.ladsoft.bakingapp.data.database.translator.RecipeRecordTranslator
 import com.ladsoft.bakingapp.data.database.translator.RecipeTranslator
 import com.ladsoft.bakingapp.entity.Recipe
@@ -17,6 +18,13 @@ class DatabaseRecipeRepository(val appDatabase: AppDatabase) {
         })
 
         return recipes
+    }
+
+    fun loadRecipe(recipeId: Long): Recipe? {
+        val dao = appDatabase.recipeDao()
+
+        val recipeRecord: RecipeRecord? = dao.getById(recipeId)
+        return if(recipeRecord != null) RecipeTranslator().translate(recipeRecord) else null
     }
 
     fun insert(recipes: List<Recipe>) {

@@ -11,6 +11,9 @@ interface RecipeDao {
     @Query(QUERY_SELECT_ALL)
     fun getAll(): List<RecipeRecord>
 
+    @Query(QUERY_SELECT_BY_ID)
+    fun getById(id: Long): RecipeRecord
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun add(recipe: RecipeRecord)
 
@@ -27,6 +30,13 @@ interface RecipeDao {
 
         const val QUERY_SELECT_ALL =
                 "SELECT * FROM ${RecipeRecord.TABLE_NAME}"
+
+        const val QUERY_SELECT_BY_ID =
+                """
+                SELECT * FROM ${RecipeRecord.TABLE_NAME}
+                WHERE ${RecipeRecord.ID_COLUMN_NAME} = :id
+                LIMIT 1
+                """
 
         const val QUERY_DELETE_ALL =
                 """

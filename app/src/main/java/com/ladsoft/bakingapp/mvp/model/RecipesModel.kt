@@ -27,7 +27,6 @@ class RecipesModel: RecipesMvp.Model {
         BakingAppApplication.appComponent.inject(this)
     }
 
-
     override fun setListener(listener: RecipesMvp.Model.Callback) {
         recipesModelListener = listener
     }

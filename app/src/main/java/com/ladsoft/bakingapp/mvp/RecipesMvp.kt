@@ -4,7 +4,6 @@ import com.ladsoft.bakingapp.entity.Recipe
 
 
 interface RecipesMvp {
-
     interface View {
         fun showRefresh(show : Boolean)
         fun onRecipesLoaded(recipes: List<Recipe>)
@@ -22,5 +21,4 @@ interface RecipesMvp {
             fun onDataLoadError()
         }
     }
-
 }

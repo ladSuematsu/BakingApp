@@ -7,7 +7,6 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,13 +14,7 @@ import android.view.ViewGroup;
 import com.ladsoft.bakingapp.R;
 import com.ladsoft.bakingapp.adapter.RecipeIngredientsAdapter;
 import com.ladsoft.bakingapp.adapter.RecipeStepsAdapter;
-import com.ladsoft.bakingapp.entity.Ingredient;
 import com.ladsoft.bakingapp.entity.Recipe;
-import com.ladsoft.bakingapp.entity.Step;
-import com.ladsoft.bakingapp.view.layoutmanager.decoration.SimplePaddingDecoration;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

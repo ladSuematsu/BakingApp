@@ -2,9 +2,8 @@ package com.ladsoft.bakingapp.mvp.presenter
 
 import com.ladsoft.bakingapp.entity.Recipe
 import com.ladsoft.bakingapp.mvp.RecipesMvp
-import com.ladsoft.bakingapp.mvp.model.RecipesModel
 
-class RecipesPresenter(val model: RecipesModel): Presenter<RecipesMvp.View>(), RecipesMvp.Model.Callback {
+class RecipesPresenter(val model: RecipesMvp.Model): Presenter<RecipesMvp.View>(), RecipesMvp.Model.Callback {
     init {
         model.setListener(this)
     }
