@@ -6,15 +6,25 @@ buildscript {
         minSdkVersion = 19
         targetSdkVersion = 25
         compiledSdkVersion = 26
-//        buildToolsVersion = '25.0.3'
-        buildToolsVersion = '26.0.1'
+        buildToolsVersion = '26.0.2'
 
         // App dependendencies
-//        supportLibraryVersion = '25.3.1'
         supportLibraryVersion = '26.1.0'
+        constraintLayoutVersion = '1.0.2'
+        exoplayerVersion = 'r2.4.1'
+
+        kotlinVersion = '1.1.51+'
         roomVersion = '1.0.0-alpha9-1'
-        kotlinVersion = '1.1.4+'
         daggerVersion = '2.11'
+        butterKnifeVersion = '8.8.1'
+
+        gsonVersion = '2.8.0'
+        retrofit2Version = '2.3.0'
+        okHttpVersion = '3.7.0'
+        okHttpLoggingInterceptorVersion = '3.8.1'
+
+        junitVersion = '4.12'
+        expressoVersion = '2.2.2'
     }
 
     repositories {
@@ -22,7 +32,7 @@ buildscript {
         google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.0-beta6'
+        classpath 'com.android.tools.build:gradle:3.0.0-beta7'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
 
         // NOTE: Do not place your application dependencies here; they belong

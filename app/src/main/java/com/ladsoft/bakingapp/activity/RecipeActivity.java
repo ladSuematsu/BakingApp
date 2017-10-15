@@ -3,6 +3,7 @@ package com.ladsoft.bakingapp.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -16,51 +17,92 @@ import com.ladsoft.bakingapp.entity.Recipe;
 import com.ladsoft.bakingapp.entity.Step;
 import com.ladsoft.bakingapp.fragment.RecipeFragment;
 import com.ladsoft.bakingapp.manager.SessionManager;
+import com.ladsoft.bakingapp.mvp.RecipeMvp;
+import com.ladsoft.bakingapp.mvp.model.RecipeModel;
+import com.ladsoft.bakingapp.mvp.presenter.RecipePresenter;
+import com.ladsoft.bakingapp.mvp.presenter.state.RecipeState;
 import com.ladsoft.bakingapp.service.IngredientUpdateService;
+import com.ladsoft.bakingapp.util.UiUtils;
+
+import org.jetbrains.annotations.NotNull;
 
 import javax.inject.Inject;
 
+import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
-public class RecipeActivity extends AppCompatActivity {
-    public static final String EXTRA_RECIPE = "extra_recipe";
+public class RecipeActivity extends AppCompatActivity implements RecipeMvp.View {
+    public static final String EXTRA_RECIPE_ID = "extra_recipe_id";
 
     @Inject SessionManager sessionManager;
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.content) FrameLayout content;
+    @BindString(R.string.recipe_error_generic) String genericErrorMessage;
 
     private RecipeFragment recipeFragment;
-    private boolean activityCreation;
+
+    private RecipePresenter presenter;
+    private String DATA_STATE = "data_state";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        activityCreation = true;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe);
         ButterKnife.bind(this);
 
-        setupComponent(this);
+        setupComponent();
 
         setupViews();
         setupFragments();
+
+        presenter = new RecipePresenter(new RecipeModel());
+
+        RecipeState state;
+        if (savedInstanceState == null) {
+            Intent intent = getIntent();
+            state = new RecipeState(intent.getExtras());
+        } else {
+            state = new RecipeState(savedInstanceState.getSerializable(DATA_STATE));
+        }
+
+        startService(new Intent(this, IngredientUpdateService.class));
+        presenter.setData(state);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
+        presenter.attachView(this);
+        presenter.loadData();
+    }
 
-        if (activityCreation) {
-            Intent intent = getIntent();
-            Recipe recipe = intent.getParcelableExtra(EXTRA_RECIPE);
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putSerializable(DATA_STATE, presenter.getState().getStateMap());
+        super.onSaveInstanceState(outState);
+    }
 
-            sessionManager.setLastSelectedReceiptId(recipe.getId());
-            startService(new Intent(this, IngredientUpdateService.class));
+    @Override
+    protected void onStop() {
+        presenter.detachView();
+        super.onStop();
+    }
 
-            recipeFragment.setDatasource(recipe);
-            activityCreation = false;
-        }
+    @Override
+    public void showRefresh(boolean show) {
+
+    }
+
+    @Override
+    public void onRecipeLoaded(@NotNull Recipe recipe) {
+        recipeFragment.setDatasource(recipe);
+    }
+
+    @Override
+    public void onRecipeLoadError() {
+        UiUtils.INSTANCE.showSnackbar(content, genericErrorMessage, null, Snackbar.LENGTH_LONG, null);
     }
 
     private void setupViews() {
@@ -70,6 +112,7 @@ public class RecipeActivity extends AppCompatActivity {
                 onBackPressed();
             }
         });
+
     }
 
     private void setupFragments() {
@@ -88,15 +131,13 @@ public class RecipeActivity extends AppCompatActivity {
     private RecipeStepsAdapter.Listener stepAdapterListener = new RecipeStepsAdapter.Listener() {
         @Override
         public void onItemClickListener(Step step) {
-//            Toast.makeText(RecipeActivity.this, step.getShortDescription(), Toast.LENGTH_LONG).show();
-
             Intent intent = new Intent(RecipeActivity.this, RecipeStepActivity.class);
             intent.putExtra(RecipeStepActivity.EXTRA_STEP, step);
             startActivity(intent);
         }
     };
 
-    public void setupComponent(RecipeActivity activity) {
+    public void setupComponent() {
         BakingAppApplication.appComponent.inject(this);
     }
 }

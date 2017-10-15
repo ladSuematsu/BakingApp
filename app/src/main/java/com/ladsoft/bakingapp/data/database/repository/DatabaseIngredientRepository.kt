@@ -19,7 +19,7 @@ class DatabaseIngredientRepository(val appDatabase: AppDatabase) {
         return recipes
     }
 
-    fun insertRecipes(ingredients: List<Ingredient>) {
+    fun insert(ingredients: List<Ingredient>) {
         val dao = appDatabase.ingredientDao()
 
         val translator = IngredientRecordTranslator()
@@ -28,5 +28,11 @@ class DatabaseIngredientRepository(val appDatabase: AppDatabase) {
         })
 
         dao.add(records)
+    }
+
+    fun deleteAllByRecipeId(recipeId: Long) {
+        val dao = appDatabase.ingredientDao()
+
+        dao.deleteAllByRecipeId(recipeId)
     }
 }

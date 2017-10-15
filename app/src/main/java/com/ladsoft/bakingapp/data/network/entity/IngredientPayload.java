@@ -5,8 +5,6 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 public class IngredientPayload {
-
-    @Expose @SerializedName("id")
     private long id;
 
     @Expose @SerializedName("quantity")
@@ -18,12 +16,12 @@ public class IngredientPayload {
     @Expose @SerializedName("ingredient")
     private String description;
 
-    public long getId() {
-        return id;
-    }
-
     public double getQuantity() {
         return quantity;
+    }
+
+    public long getId() {
+        return id;
     }
 
     public String getMeasure() {
@@ -32,5 +30,9 @@ public class IngredientPayload {
 
     public String getDescription() {
         return description;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 }

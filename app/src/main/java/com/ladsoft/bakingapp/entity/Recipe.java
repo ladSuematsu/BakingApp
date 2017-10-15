@@ -92,4 +92,11 @@ public class Recipe implements Parcelable {
         return steps;
     }
 
+    public void setIngredients(List<Ingredient> ingredients) {
+        this.ingredients = ingredients;
+    }
+
+    public void setSteps(List<Step> steps) {
+        this.steps = steps;
+    }
 }
