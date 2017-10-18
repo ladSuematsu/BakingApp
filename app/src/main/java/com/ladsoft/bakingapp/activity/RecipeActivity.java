@@ -16,6 +16,7 @@ import com.ladsoft.bakingapp.application.BakingAppApplication;
 import com.ladsoft.bakingapp.entity.Recipe;
 import com.ladsoft.bakingapp.entity.Step;
 import com.ladsoft.bakingapp.fragment.RecipeFragment;
+import com.ladsoft.bakingapp.fragment.RecipeStepFragment;
 import com.ladsoft.bakingapp.manager.SessionManager;
 import com.ladsoft.bakingapp.mvp.RecipeMvp;
 import com.ladsoft.bakingapp.mvp.model.RecipeModel;
@@ -31,6 +32,7 @@ import javax.inject.Inject;
 import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.Optional;
 
 
 public class RecipeActivity extends AppCompatActivity implements RecipeMvp.View {
@@ -39,6 +41,7 @@ public class RecipeActivity extends AppCompatActivity implements RecipeMvp.View 
     @Inject SessionManager sessionManager;
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.content) FrameLayout content;
+    @BindView (R.id.detail) @Nullable FrameLayout detail;
     @BindString(R.string.recipe_error_generic) String genericErrorMessage;
 
     private RecipeFragment recipeFragment;
@@ -122,7 +125,7 @@ public class RecipeActivity extends AppCompatActivity implements RecipeMvp.View 
             recipeFragment = RecipeFragment.newInstance();
             fragmentManager.beginTransaction()
                     .replace(content.getId(), recipeFragment)
-                    .commit();
+                    .commitNow();
         }
 
         recipeFragment.setListener(stepAdapterListener);
@@ -131,9 +134,20 @@ public class RecipeActivity extends AppCompatActivity implements RecipeMvp.View 
     private RecipeStepsAdapter.Listener stepAdapterListener = new RecipeStepsAdapter.Listener() {
         @Override
         public void onItemClickListener(Step step) {
-            Intent intent = new Intent(RecipeActivity.this, RecipeStepActivity.class);
-            intent.putExtra(RecipeStepActivity.EXTRA_STEP, step);
-            startActivity(intent);
+            if (detail != null) {
+                RecipeStepFragment stepFragment = RecipeStepFragment.newInstance();
+
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                fragmentManager.beginTransaction()
+                        .replace(detail.getId(), stepFragment)
+                        .commitNow();
+
+                stepFragment.setDatasource(step);
+            } else {
+                Intent intent = new Intent(RecipeActivity.this, RecipeStepActivity.class);
+                intent.putExtra(RecipeStepActivity.EXTRA_STEP, step);
+                startActivity(intent);
+            }
         }
     };
 
