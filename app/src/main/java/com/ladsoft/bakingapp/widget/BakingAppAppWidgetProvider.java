@@ -9,7 +9,6 @@ import android.widget.RemoteViews;
 
 import com.ladsoft.bakingapp.R;
 import com.ladsoft.bakingapp.activity.MainActivity;
-import com.ladsoft.bakingapp.manager.SessionManager;
 import com.ladsoft.bakingapp.widget.remoteviewsservice.IngredientsListWidgetService;
 
 /**

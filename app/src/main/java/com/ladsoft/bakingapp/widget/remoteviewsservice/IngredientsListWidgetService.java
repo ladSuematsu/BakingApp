@@ -2,12 +2,14 @@ package com.ladsoft.bakingapp.widget.remoteviewsservice;
 
 import android.content.Context;
 import android.content.Intent;
+import android.view.View;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
 import com.ladsoft.bakingapp.R;
 import com.ladsoft.bakingapp.application.BakingAppApplication;
-import com.ladsoft.bakingapp.data.repository.RecipeRepository;
+import com.ladsoft.bakingapp.data.database.repository.DatabaseIngredientRepository;
+import com.ladsoft.bakingapp.data.database.repository.DatabaseRecipeRepository;
 import com.ladsoft.bakingapp.entity.Ingredient;
 import com.ladsoft.bakingapp.entity.Recipe;
 import com.ladsoft.bakingapp.manager.SessionManager;
@@ -16,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
+
 
 
 public class IngredientsListWidgetService extends RemoteViewsService {
@@ -28,9 +31,11 @@ public class IngredientsListWidgetService extends RemoteViewsService {
 
     public static class ListRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
         @Inject SessionManager sessionManager;
-        @Inject RecipeRepository repository;
+        @Inject DatabaseRecipeRepository recipeRepository;
+        @Inject DatabaseIngredientRepository repository;
 
         private final Context context;
+        private Recipe recipe;
         private List<Ingredient> ingredients;
 
         ListRemoteViewsFactory(Context context) {
@@ -48,11 +53,13 @@ public class IngredientsListWidgetService extends RemoteViewsService {
         public void onDataSetChanged() {
             long lastSelectedReceiptId = sessionManager.getLastSelectedReceiptId().invoke();
 
-            List<Recipe> recipes= repository.recipes();
-            for (Recipe recipe : recipes) {
-                if (recipe.getId() == lastSelectedReceiptId) {
-                    ingredients = recipe.getIngredients();
-                    break;
+            recipe = recipeRepository.loadRecipe(lastSelectedReceiptId);
+            ingredients.clear();
+            if (recipe != null) {
+                ingredients = repository.loadForRecipeId(lastSelectedReceiptId);
+                if (ingredients == null) {
+                    recipe = null;
+                    ingredients = new ArrayList<>();
                 }
             }
         }
@@ -64,17 +71,29 @@ public class IngredientsListWidgetService extends RemoteViewsService {
 
         @Override
         public int getCount() {
-            return ingredients.size();
+            return ingredients.size() + (recipe != null ? 1 : 0);
         }
 
         @Override
         public RemoteViews getViewAt(int position) {
             RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_item_recipe_ingredient);
 
-            Ingredient ingredient = ingredients.get(position);
-            views.setTextViewText(R.id.ingredient, ingredient.getDescription());
-            views.setTextViewText(R.id.quantity, String.valueOf(ingredient.getQuantity()));
-            views.setTextViewText(R.id.measure, ingredient.getMeasure());
+            if (position == 0) {
+                views.setViewVisibility(R.id.quantity, View.GONE);
+                views.setViewVisibility(R.id.measure, View.GONE);
+
+                views.setTextViewText(R.id.ingredient, recipe.getName());
+                views.setTextViewText(R.id.quantity, null);
+                views.setTextViewText(R.id.measure, null);
+            } else {
+                views.setViewVisibility(R.id.quantity, View.VISIBLE);
+                views.setViewVisibility(R.id.measure, View.VISIBLE);
+
+                Ingredient ingredient = ingredients.get(position - 1);
+                views.setTextViewText(R.id.ingredient, ingredient.getDescription());
+                views.setTextViewText(R.id.quantity, String.valueOf(ingredient.getQuantity()));
+                views.setTextViewText(R.id.measure, ingredient.getMeasure());
+            }
 
             return views;
         }
@@ -91,12 +110,12 @@ public class IngredientsListWidgetService extends RemoteViewsService {
 
         @Override
         public long getItemId(int position) {
-            return ingredients.get(position).getId();
+            return position == 0 ? recipe.getId() : ingredients.get(position - 1).getId();
         }
 
         @Override
         public boolean hasStableIds() {
-            return true;
+            return false;
         }
     }
 

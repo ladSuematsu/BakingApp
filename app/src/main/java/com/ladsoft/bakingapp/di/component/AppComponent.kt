@@ -6,6 +6,8 @@ import com.ladsoft.bakingapp.di.module.AppModule
 import com.ladsoft.bakingapp.fragment.RecipesFragment
 import com.ladsoft.bakingapp.mvp.model.RecipeModel
 import com.ladsoft.bakingapp.mvp.model.RecipesModel
+import com.ladsoft.bakingapp.mvp.presenter.state.RecipeState
+import com.ladsoft.bakingapp.widget.BakingAppAppWidgetProvider
 import com.ladsoft.bakingapp.widget.remoteviewsservice.IngredientsListWidgetService
 import dagger.Component
 import javax.inject.Singleton
@@ -21,8 +23,9 @@ interface AppComponent {
 
     fun inject(model: RecipesModel)
     fun inject(model: RecipeModel)
-
+    fun inject(recipeState: RecipeState)
     fun inject(viewFactory: IngredientsListWidgetService.ListRemoteViewsFactory)
+
     object Initializer {
         fun initialize(application: BakingAppApplication): AppComponent = DaggerAppComponent
                 .builder()
