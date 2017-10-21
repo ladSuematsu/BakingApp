@@ -68,12 +68,12 @@ public class RecipeStepsAdapter extends RecyclerView.Adapter<RecipeStepsAdapter.
         @Override
         public void onClick(View v) {
             if(listener != null) {
-                listener.onItemClickListener(datasource.get(getAdapterPosition()));
+                listener.onItemClickListener(getAdapterPosition(), datasource);
             }
         }
     }
 
     public interface Listener {
-        void onItemClickListener(Step step);
+        void onItemClickListener(int itemIndex, List<Step> steps);
     }
 }

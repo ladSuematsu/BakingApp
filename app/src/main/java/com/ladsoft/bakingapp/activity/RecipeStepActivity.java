@@ -12,26 +12,36 @@ import android.widget.FrameLayout;
 import com.ladsoft.bakingapp.R;
 import com.ladsoft.bakingapp.entity.Step;
 import com.ladsoft.bakingapp.fragment.RecipeStepFragment;
+import com.ladsoft.bakingapp.mvp.StepsMvp;
+import com.ladsoft.bakingapp.mvp.presenter.StepPresenter;
+
+import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
-public class RecipeStepActivity extends AppCompatActivity {
-    public static String EXTRA_STEP = "extra_step";
+public class RecipeStepActivity extends AppCompatActivity implements StepsMvp.View, RecipeStepFragment.Callback {
+    public static final String EXTRA_STEPS = "extra_steps";
+    public static final String EXTRA_STEP_INDEX = "extra_step_index";
 
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.content) FrameLayout content;
     private RecipeStepFragment recipeStepFragment;
     private boolean activityCreation;
+    private StepPresenter presenter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         activityCreation = true;
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_recipe);
+        setContentView(R.layout.activity_step);
         ButterKnife.bind(this);
+
+        presenter = new StepPresenter();
 
         setupViews();
         setupFragments();
@@ -41,13 +51,23 @@ public class RecipeStepActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
+        presenter.attachView(this);
         if (activityCreation) {
+
             Intent intent = getIntent();
-            recipeStepFragment.setDatasource((Step) intent.getParcelableExtra(EXTRA_STEP));
+
+            presenter.setData(intent.getIntExtra(EXTRA_STEP_INDEX, 0), (List) intent.getParcelableArrayListExtra(EXTRA_STEPS));
+            presenter.showCurrentStep();
+
             activityCreation = false;
         }
     }
 
+    @Override
+    protected void onStop() {
+        presenter.detachView();
+        super.onStop();
+    }
 
     private void setupViews() {
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -56,6 +76,8 @@ public class RecipeStepActivity extends AppCompatActivity {
                 onBackPressed();
             }
         });
+
+
     }
 
     private void setupFragments() {
@@ -67,5 +89,22 @@ public class RecipeStepActivity extends AppCompatActivity {
                     .replace(content.getId(), recipeStepFragment)
                     .commit();
         }
+
+        recipeStepFragment.setListener(this);
+    }
+
+    @Override
+    public void showStep(@NotNull Step step) {
+        recipeStepFragment.setDatasource(step);
+    }
+
+    @Override
+    public void onNextPress() {
+        presenter.nextStep();
+    }
+
+    @Override
+    public void onPreviousPress() {
+        presenter.previousStep();
     }
 }

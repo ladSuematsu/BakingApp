@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.android.exoplayer2.DefaultLoadControl;
@@ -45,6 +46,8 @@ public class RecipeStepFragment extends Fragment {
 
     private static final String TAG = RecipeStepFragment.class.getSimpleName();
 
+    @BindView(R.id.next) Button stepNext;
+    @BindView(R.id.previous) Button stepPrevious;
     @BindView(R.id.step_description) TextView stepDescription;
 
     @BindView(R.id.media_player) SimpleExoPlayerView mediaPlayerView;
@@ -54,6 +57,8 @@ public class RecipeStepFragment extends Fragment {
     private int currentWindow;
     private boolean playWhenReady = true;
     private MediaSource mediaSource;
+    private Callback listener;
+
     public static RecipeStepFragment newInstance() {
         return new RecipeStepFragment();
     }
@@ -69,6 +74,26 @@ public class RecipeStepFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_recipe_step, container, false);
         ButterKnife.bind(this, view);
         return view;
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+
+        stepPrevious.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (listener != null) { listener.onPreviousPress(); }
+            }
+        });
+
+        stepNext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (listener != null) { listener.onNextPress(); }
+            }
+        });
     }
 
     @Override
@@ -216,6 +241,10 @@ public class RecipeStepFragment extends Fragment {
         public void onPlaybackParametersChanged(PlaybackParameters playbackParameters) {}
     };
 
+    public void setListener(Callback callback) {
+        listener = callback;
+    }
+
     public void setDatasource(Step datasource) {
         if (datasource == null) {
             stepDescription.setText(null);
@@ -267,4 +296,8 @@ public class RecipeStepFragment extends Fragment {
 //        }
 //    }
 
+    public interface Callback {
+        void onNextPress();
+        void onPreviousPress();
+    }
 }

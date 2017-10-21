@@ -27,12 +27,14 @@ import com.ladsoft.bakingapp.util.UiUtils;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.inject.Inject;
 
 import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.Optional;
 
 
 public class RecipeActivity extends AppCompatActivity implements RecipeMvp.View {
@@ -133,7 +135,7 @@ public class RecipeActivity extends AppCompatActivity implements RecipeMvp.View 
 
     private RecipeStepsAdapter.Listener stepAdapterListener = new RecipeStepsAdapter.Listener() {
         @Override
-        public void onItemClickListener(Step step) {
+        public void onItemClickListener(int itemIndex, List<Step> steps) {
             if (detail != null) {
                 RecipeStepFragment stepFragment = RecipeStepFragment.newInstance();
 
@@ -142,10 +144,11 @@ public class RecipeActivity extends AppCompatActivity implements RecipeMvp.View 
                         .replace(detail.getId(), stepFragment)
                         .commitNow();
 
-                stepFragment.setDatasource(step);
+                stepFragment.setDatasource(steps.get(itemIndex));
             } else {
                 Intent intent = new Intent(RecipeActivity.this, RecipeStepActivity.class);
-                intent.putExtra(RecipeStepActivity.EXTRA_STEP, step);
+                intent.putParcelableArrayListExtra(RecipeStepActivity.EXTRA_STEPS, (ArrayList<Step>) steps);
+                intent.putExtra(RecipeStepActivity.EXTRA_STEP_INDEX, itemIndex);
                 startActivity(intent);
             }
         }
