@@ -30,6 +30,21 @@ public class Step implements Parcelable {
         thumbnailUrl = in.readString();
     }
 
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeLong(id);
+        dest.writeLong(recipeId);
+        dest.writeString(shortDescription);
+        dest.writeString(description);
+        dest.writeString(videoUrl);
+        dest.writeString(thumbnailUrl);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
     public static final Creator<Step> CREATOR = new Creator<Step>() {
         @Override
         public Step createFromParcel(Parcel in) {
@@ -67,18 +82,4 @@ public class Step implements Parcelable {
         return thumbnailUrl;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeLong(id);
-        dest.writeLong(recipeId);
-        dest.writeString(shortDescription);
-        dest.writeString(description);
-        dest.writeString(videoUrl);
-        dest.writeString(thumbnailUrl);
-    }
 }
