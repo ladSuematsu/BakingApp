@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
@@ -19,17 +20,35 @@
             android:layout_width="match_parent"
             />
     </android.support.design.widget.AppBarLayout>
-    <RelativeLayout app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    <android.support.constraint.ConstraintLayout app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <FrameLayout android:id="@+id/content"
-            android:layout_alignParentStart="true"
-            android:layout_width="@dimen/master_list_width"
-            android:layout_height="match_parent" />
-        <FrameLayout android:id="@+id/detail"
-            android:layout_toEndOf="@+id/content"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-    </RelativeLayout>
+
+        <FrameLayout
+            android:id="@+id/content"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/detail"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintHorizontal_chainStyle="spread"
+            app:layout_constraintHorizontal_weight="1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="spread" />
+
+        <FrameLayout
+            android:id="@+id/detail"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_chainStyle="spread"
+            app:layout_constraintHorizontal_weight="2"
+            app:layout_constraintStart_toEndOf="@+id/content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0"
+            app:layout_constraintVertical_chainStyle="spread" />
+    </android.support.constraint.ConstraintLayout>
 </android.support.design.widget.CoordinatorLayout>
