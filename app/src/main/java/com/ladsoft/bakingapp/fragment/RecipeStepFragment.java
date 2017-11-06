@@ -21,6 +21,7 @@ import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.LoadControl;
 import com.google.android.exoplayer2.PlaybackParameters;
+import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
@@ -54,6 +55,7 @@ public class RecipeStepFragment extends Fragment {
 
     private long playbackPosition;
 
+    private Step datasource;
     private int currentWindow;
     private boolean playWhenReady = true;
     private MediaSource mediaSource;
@@ -94,49 +96,84 @@ public class RecipeStepFragment extends Fragment {
                 if (listener != null) { listener.onNextPress(); }
             }
         });
+
+        if (datasource == null) {
+            stepDescription.setText(null);
+
+            if (mediaSource != null) { mediaSource.releaseSource(); }
+            if (mediaPlayer != null) { mediaPlayer.clearVideoSurface(); }
+        } else {
+            stepDescription.setText(datasource.getDescription());
+
+            if (datasource.getVideoUrl() != null) {
+                Uri mediaUri = Uri.parse(datasource.getVideoUrl());
+                Log.d(TAG, "Step media Uri: " + mediaUri.toString());
+
+                mediaSource = buildMediaSource(mediaUri);
+            }
+        }
     }
 
     @Override
     public void onStart() {
-        Log.i("STEP_VID_PLAYER", "onStart");
+        Log.d(TAG, "onStart STEP ID " + datasource.getId());
         super.onStart();
 
-        if (Util.SDK_INT > 23) {
+        if (Util.SDK_INT > 23 && isVisible()) {
             initializePlayer();
         }
     }
 
     @Override
     public void onResume() {
-        Log.i("STEP_VID_PLAYER", "onResume");
+        Log.d(TAG, "onResume STEP ID " + datasource.getId());
         super.onResume();
 
-        if (Util.SDK_INT <= 23) {
+        if (Util.SDK_INT <= 23 && isVisible()) {
             initializePlayer();
         }
     }
 
     @Override
-    public void onPause() {
-        Log.i("STEP_VID_PLAYER", "onPause");
-        super.onPause();
-        if (Util.SDK_INT <= 23) {
-            releasePlayer();
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+
+        Log.d(TAG, "user visible hint STEP ID " + datasource.getId() + " " + isVisibleToUser);
+
+        playWhenReady = isVisibleToUser;
+        if (isVisibleToUser) {
+            if (mediaPlayer != null) {
+                Log.d(TAG, "user visible hint autoplaying STEP ID " + datasource.getId());
+                mediaPlayer.setPlayWhenReady(playWhenReady);
+            }
+        } else {
+            if (mediaPlayer != null) {
+                Log.d(TAG, "user visible hint autoPausing STEP ID " + datasource.getId());
+
+                mediaPlayer.setPlayWhenReady(false);
+            }
         }
     }
 
     @Override
+    public void onPause() {
+        Log.d(TAG, "onPause STEP ID " + datasource.getId());
+        if (Util.SDK_INT <= 23) {
+            releasePlayer();
+        }
+        super.onPause();
+    }
+
+    @Override
     public void onStop() {
-        Log.i("STEP_VID_PLAYER", "onStop");
-        super.onStop();
+        Log.d(TAG, "onStop STEP ID " + datasource.getId());
         if (Util.SDK_INT > 23) {
             releasePlayer();
         }
+        super.onStop();
     }
 
     SimpleExoPlayer mediaPlayer;
-    MediaSessionCompat mediaSession;
-    PlaybackStateCompat.Builder playbackStateBuilder;
     private void initializePlayer() {
         if(mediaPlayer == null) {
             DefaultRenderersFactory renderersFactory = new DefaultRenderersFactory(getContext());
@@ -145,6 +182,9 @@ public class RecipeStepFragment extends Fragment {
             mediaPlayer = ExoPlayerFactory.newSimpleInstance(renderersFactory, trackSelector, loadControl);
             mediaPlayer.addListener(playerListener);
 
+            if (playWhenReady) {
+                Log.d(TAG, "initializePlayer: autoPlaying media  STEP ID " + datasource.getId());
+            }
             mediaPlayerView.setPlayer(mediaPlayer);
 
             mediaPlayer.setPlayWhenReady(playWhenReady);
@@ -152,17 +192,9 @@ public class RecipeStepFragment extends Fragment {
             mediaPlayerView.hideController();
         }
 
-//        MediaSource mediaSource = buildMediaSource(Uri.parse(getString(R.string.media_url_dash)));
-
         if (mediaSource != null) {
             mediaPlayer.prepare(mediaSource, true, false);
         }
-
-//        String userAgent = Util.getUserAgent(this, "ClassicalMusicQuiz");
-//        MediaSource mediaSource = new ExtractorMediaSource(mediaUri, new DefaultDataSourceFactory(
-//                this, userAgent), new DefaultExtractorsFactory(), null, null);
-//        mExoPlayer.prepare(mediaSource);
-//        mExoPlayer.setPlayWhenReady(true);
     }
 
     private void releasePlayer() {
@@ -182,57 +214,37 @@ public class RecipeStepFragment extends Fragment {
         DataSource.Factory dataSourceFactory = new DefaultHttpDataSourceFactory("ua", BANDWIDTH_METER);
         ExtractorsFactory extractorsFactory = new DefaultExtractorsFactory();
 
-//        DashChunkSource.Factory dashChunkSourceFactory = new DefaultDashChunkSource.Factory(dataSourceFactory);
-//        return new DashMediaSource(uri, dataSourceFactory, dashChunkSourceFactory, null, null);
         return new ExtractorMediaSource(uri, dataSourceFactory, extractorsFactory, null, null);
     }
 
-//    private void initializeMediaSession() {
-//        mediaSession = new MediaSessionCompat(getContext(), TAG);
-//        mediaSession.setFlags(
-//                MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS |
-//                    MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
-//
-//        mediaSession.setMediaButtonReceiver(null);
-//
-//        playbackStateBuilder = new PlaybackStateCompat.Builder()
-//                .setActions(
-//                        PlaybackStateCompat.ACTION_PLAY |
-//                                PlaybackStateCompat.ACTION_PAUSE |
-//                                PlaybackStateCompat.ACTION_PLAY_PAUSE);
-//
-//        mediaSession.setPlaybackState(playbackStateBuilder.build());
-//
-//        mediaSession.setCallback(new mediaSessionCallback());
-//
-//        mediaSession.setActive(true);
-//    }
-
-    private ExoPlayer.EventListener playerListener = new ExoPlayer.EventListener() {
-        @Override
-        public void onTimelineChanged(Timeline timeline, Object o) {}
+    private Player.EventListener playerListener = new Player.EventListener() {
 
         @Override
-        public void onTracksChanged(TrackGroupArray trackGroupArray, TrackSelectionArray trackSelectionArray) {}
+        public void onTimelineChanged(Timeline timeline, Object manifest) {}
 
         @Override
-        public void onLoadingChanged(boolean b) {}
+        public void onTracksChanged(TrackGroupArray trackGroups, TrackSelectionArray trackSelections) {}
+
+        @Override
+        public void onLoadingChanged(boolean isLoading) {}
 
         @Override
         public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-//            if((playbackState == ExoPlayer.STATE_READY) && playWhenReady){
-//                playbackStateBuilder.setState(PlaybackStateCompat.STATE_PLAYING,
-//                        mediaPlayer.getCurrentPosition(), 1f);
-//            } else if((playbackState == ExoPlayer.STATE_READY)){
-//                playbackStateBuilder.setState(PlaybackStateCompat.STATE_PAUSED,
-//                        mediaPlayer.getCurrentPosition(), 1f);
-//            }
-//            mediaSession.setPlaybackState(playbackStateBuilder.build());
-//            showNotification(playbackStateBuilder.build());
+            PlaybackStateCompat.Builder builder = new PlaybackStateCompat.Builder();
+
+            switch(playbackState) {
+                case Player.STATE_ENDED:
+                    mediaPlayer.setPlayWhenReady(false);
+                    mediaPlayer.seekToDefaultPosition();
+                    break;
+            }
         }
 
         @Override
-        public void onPlayerError(ExoPlaybackException e) {}
+        public void onRepeatModeChanged(int repeatMode) {}
+
+        @Override
+        public void onPlayerError(ExoPlaybackException error) {}
 
         @Override
         public void onPositionDiscontinuity() {}
@@ -246,55 +258,29 @@ public class RecipeStepFragment extends Fragment {
     }
 
     public void setDatasource(Step datasource) {
-        if (datasource == null) {
-            stepDescription.setText(null);
-            mediaSource.releaseSource();
-            mediaPlayer.clearVideoSurface();
-        } else {
-            stepDescription.setText(datasource.getDescription());
+        this.datasource = datasource;
 
-            if (datasource.getVideoUrl() != null) {
-                Uri mediaUri = Uri.parse(datasource.getVideoUrl());
-                Log.i("STEP_VID_PLAYER", "Step media Uri: " + mediaUri.toString());
+        if (isVisible()) {
+            if (datasource == null) {
+                stepDescription.setText(null);
 
-                mediaSource = buildMediaSource(mediaUri);
-                initializePlayer();
+                if (mediaSource != null) {
+                    mediaSource.releaseSource();
+                    mediaPlayer.clearVideoSurface();
+                }
+            } else {
+                stepDescription.setText(datasource.getDescription());
+
+                if (datasource.getVideoUrl() != null) {
+                    Uri mediaUri = Uri.parse(datasource.getVideoUrl());
+                    Log.d(TAG, "Step media Uri: " + mediaUri.toString());
+
+                    mediaSource = buildMediaSource(mediaUri);
+                    initializePlayer();
+                }
             }
         }
-
-
     }
-
-    private class mediaSessionCallback extends MediaSessionCompat.Callback {
-        @Override
-        public void onPlay() {
-            mediaPlayer.setPlayWhenReady(true);
-        }
-
-        @Override
-        public void onPause() {
-            mediaPlayer.setPlayWhenReady(false);
-        }
-
-        @Override
-        public void onSkipToPrevious() {
-            mediaPlayer.seekTo(0);
-        }
-    }
-
-//    /**
-//     * Broadcast Receiver registered to receive the MEDIA_BUTTON intent coming from clients.
-//     */
-//    public static class MediaReceiver extends BroadcastReceiver {
-//
-//        public MediaReceiver() {
-//        }
-//
-//        @Override
-//        public void onReceive(Context context, Intent intent) {
-//            MediaButtonReceiver.handleIntent(mMediaSession, intent);
-//        }
-//    }
 
     public interface Callback {
         void onNextPress();

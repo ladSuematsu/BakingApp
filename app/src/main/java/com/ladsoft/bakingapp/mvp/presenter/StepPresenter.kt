@@ -8,35 +8,54 @@ class StepPresenter : Presenter<StepsMvp.View>() {
 
     private val steps : MutableList<Step> = mutableListOf()
     private var stepIndex = 0
+    private var autoLoad = true
 
-    fun setData(initialIndex : Int, steps : List<Step>? ) {
+    fun setData(initialIndex: Int, steps: List<Step>?, autoLoad: Boolean = true) {
         if (steps != null) {
-            stepIndex = if (initialIndex < steps.size)  initialIndex else 0
+            when {
+                initialIndex < steps.size -> stepIndex = initialIndex
+                else -> stepIndex = 0
+            }
+
             this.steps.addAll(steps)
+
+            when {
+                autoLoad -> view?.onStepsLoaded(this.steps)
+                else -> this.autoLoad = false
+            }
         }
     }
 
     fun showCurrentStep() {
         steps.apply {
             if (size > 0) {
-                view?.showStep(get(stepIndex))
+                if (!autoLoad) {
+                    view?.onStepsLoaded(steps)
+                    autoLoad = true
+                }
+
+                view?.showStep(stepIndex)
             }
         }
     }
 
+    fun setCurrentStepIndex(index: Int) {
+        stepIndex = index
+    }
+
     fun nextStep() {
         if (stepIndex < this.steps.size) {
-            this.steps.apply {
-                view?.showStep(get(stepIndex++))
-            }
+            stepIndex = if (stepIndex + 1 == this.steps.size) stepIndex else stepIndex + 1
+
+            view?.showStep(stepIndex)
         }
     }
 
     fun previousStep() {
         if (stepIndex > 0) {
-            this.steps.apply {
-                view?.showStep(get(--stepIndex))
-            }
+            stepIndex = if (stepIndex == 0) stepIndex else stepIndex - 1
+
+            view?.showStep(stepIndex)
         }
     }
 

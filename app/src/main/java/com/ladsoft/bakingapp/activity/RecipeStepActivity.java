@@ -3,13 +3,14 @@ package com.ladsoft.bakingapp.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentManager;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
-import android.widget.FrameLayout;
 
 import com.ladsoft.bakingapp.R;
+import com.ladsoft.bakingapp.adapter.StepSlideshowAdapter;
 import com.ladsoft.bakingapp.entity.Step;
 import com.ladsoft.bakingapp.fragment.RecipeStepFragment;
 import com.ladsoft.bakingapp.mvp.StepsMvp;
@@ -28,8 +29,8 @@ public class RecipeStepActivity extends AppCompatActivity implements StepsMvp.Vi
     public static final String EXTRA_STEP_INDEX = "extra_step_index";
 
     @BindView(R.id.toolbar) Toolbar toolbar;
-    @BindView(R.id.content) FrameLayout content;
-    private RecipeStepFragment recipeStepFragment;
+    @BindView(R.id.content) ViewPager content;
+    private StepSlideshowAdapter slideshowAdapter;
     private boolean activityCreation;
     private StepPresenter presenter;
 
@@ -56,7 +57,7 @@ public class RecipeStepActivity extends AppCompatActivity implements StepsMvp.Vi
 
             Intent intent = getIntent();
 
-            presenter.setData(intent.getIntExtra(EXTRA_STEP_INDEX, 0), (List) intent.getParcelableArrayListExtra(EXTRA_STEPS));
+            presenter.setData(intent.getIntExtra(EXTRA_STEP_INDEX, 0), (List) intent.getParcelableArrayListExtra(EXTRA_STEPS), true);
             presenter.showCurrentStep();
 
             activityCreation = false;
@@ -76,26 +77,24 @@ public class RecipeStepActivity extends AppCompatActivity implements StepsMvp.Vi
                 onBackPressed();
             }
         });
-
-
     }
 
     private void setupFragments() {
-        FragmentManager fragmentManager = getSupportFragmentManager();
+        slideshowAdapter = new StepSlideshowAdapter(getSupportFragmentManager(), this);
+        content.setAdapter(slideshowAdapter);
 
-        if ((recipeStepFragment = (RecipeStepFragment) fragmentManager.findFragmentById(content.getId())) == null) {
-            recipeStepFragment = RecipeStepFragment.newInstance();
-            fragmentManager.beginTransaction()
-                    .replace(content.getId(), recipeStepFragment)
-                    .commit();
-        }
-
-        recipeStepFragment.setListener(this);
+        content.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+            @Override
+            public void onPageSelected(int position) {
+                super.onPageSelected(position);
+                presenter.setCurrentStepIndex(position);
+            }
+        });
     }
 
     @Override
-    public void showStep(@NotNull Step step) {
-        recipeStepFragment.setDatasource(step);
+    public void onStepsLoaded(@NotNull List<? extends Step> steps) {
+        slideshowAdapter.setDataSource(steps);
     }
 
     @Override
@@ -106,5 +105,11 @@ public class RecipeStepActivity extends AppCompatActivity implements StepsMvp.Vi
     @Override
     public void onPreviousPress() {
         presenter.previousStep();
+    }
+
+    @Override
+    public void showStep(int position) {
+        Log.d("RECIPE_STEP", "Navigating to index " + position);
+        content.setCurrentItem(position, true);
     }
 }

@@ -5,6 +5,7 @@ import com.ladsoft.bakingapp.entity.Step
 
 interface StepsMvp {
     interface View {
-        fun showStep(step: Step)
+        fun onStepsLoaded(steps: List<Step>)
+        fun showStep(position: Int)
     }
 }
