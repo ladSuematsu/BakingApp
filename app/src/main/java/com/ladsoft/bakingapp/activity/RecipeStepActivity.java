@@ -3,35 +3,46 @@ package com.ladsoft.bakingapp.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentManager;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
-import android.widget.FrameLayout;
 
 import com.ladsoft.bakingapp.R;
+import com.ladsoft.bakingapp.adapter.StepSlideshowAdapter;
 import com.ladsoft.bakingapp.entity.Step;
 import com.ladsoft.bakingapp.fragment.RecipeStepFragment;
+import com.ladsoft.bakingapp.mvp.StepsMvp;
+import com.ladsoft.bakingapp.mvp.presenter.StepPresenter;
+
+import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
-public class RecipeStepActivity extends AppCompatActivity {
-    public static String EXTRA_STEP = "extra_step";
+public class RecipeStepActivity extends AppCompatActivity implements StepsMvp.View, RecipeStepFragment.Callback {
+    public static final String EXTRA_STEPS = "extra_steps";
+    public static final String EXTRA_STEP_INDEX = "extra_step_index";
 
     @BindView(R.id.toolbar) Toolbar toolbar;
-    @BindView(R.id.content) FrameLayout content;
-    private RecipeStepFragment recipeStepFragment;
+    @BindView(R.id.content) ViewPager content;
+    private StepSlideshowAdapter slideshowAdapter;
     private boolean activityCreation;
+    private StepPresenter presenter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         activityCreation = true;
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_recipe);
+        setContentView(R.layout.activity_step);
         ButterKnife.bind(this);
+
+        presenter = new StepPresenter();
 
         setupViews();
         setupFragments();
@@ -41,13 +52,23 @@ public class RecipeStepActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
+        presenter.attachView(this);
         if (activityCreation) {
+
             Intent intent = getIntent();
-            recipeStepFragment.setDatasource((Step) intent.getParcelableExtra(EXTRA_STEP));
+
+            presenter.setData(intent.getIntExtra(EXTRA_STEP_INDEX, 0), (List) intent.getParcelableArrayListExtra(EXTRA_STEPS), true);
+            presenter.showCurrentStep();
+
             activityCreation = false;
         }
     }
 
+    @Override
+    protected void onStop() {
+        presenter.detachView();
+        super.onStop();
+    }
 
     private void setupViews() {
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -59,13 +80,36 @@ public class RecipeStepActivity extends AppCompatActivity {
     }
 
     private void setupFragments() {
-        FragmentManager fragmentManager = getSupportFragmentManager();
+        slideshowAdapter = new StepSlideshowAdapter(getSupportFragmentManager(), this);
+        content.setAdapter(slideshowAdapter);
 
-        if ((recipeStepFragment = (RecipeStepFragment) fragmentManager.findFragmentById(content.getId())) == null) {
-            recipeStepFragment = RecipeStepFragment.newInstance();
-            fragmentManager.beginTransaction()
-                    .replace(content.getId(), recipeStepFragment)
-                    .commit();
-        }
+        content.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+            @Override
+            public void onPageSelected(int position) {
+                super.onPageSelected(position);
+                presenter.setCurrentStepIndex(position);
+            }
+        });
+    }
+
+    @Override
+    public void onStepsLoaded(@NotNull List<? extends Step> steps) {
+        slideshowAdapter.setDataSource(steps);
+    }
+
+    @Override
+    public void onNextPress() {
+        presenter.nextStep();
+    }
+
+    @Override
+    public void onPreviousPress() {
+        presenter.previousStep();
+    }
+
+    @Override
+    public void showStep(int position) {
+        Log.d("RECIPE_STEP", "Navigating to index " + position);
+        content.setCurrentItem(position, true);
     }
 }

@@ -5,26 +5,35 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 
 import com.ladsoft.bakingapp.R;
 import com.ladsoft.bakingapp.adapter.RecipeStepsAdapter;
+import com.ladsoft.bakingapp.adapter.StepSlideshowAdapter;
 import com.ladsoft.bakingapp.application.BakingAppApplication;
 import com.ladsoft.bakingapp.entity.Recipe;
 import com.ladsoft.bakingapp.entity.Step;
 import com.ladsoft.bakingapp.fragment.RecipeFragment;
+import com.ladsoft.bakingapp.fragment.RecipeStepFragment;
 import com.ladsoft.bakingapp.manager.SessionManager;
 import com.ladsoft.bakingapp.mvp.RecipeMvp;
+import com.ladsoft.bakingapp.mvp.StepsMvp;
 import com.ladsoft.bakingapp.mvp.model.RecipeModel;
 import com.ladsoft.bakingapp.mvp.presenter.RecipePresenter;
+import com.ladsoft.bakingapp.mvp.presenter.StepPresenter;
 import com.ladsoft.bakingapp.mvp.presenter.state.RecipeState;
 import com.ladsoft.bakingapp.service.IngredientUpdateService;
 import com.ladsoft.bakingapp.util.UiUtils;
 
 import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -33,13 +42,16 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
-public class RecipeActivity extends AppCompatActivity implements RecipeMvp.View {
+public class RecipeActivity extends AppCompatActivity implements RecipeMvp.View, RecipeStepFragment.Callback, StepsMvp.View {
     public static final String EXTRA_RECIPE_ID = "extra_recipe_id";
 
     @Inject SessionManager sessionManager;
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.content) FrameLayout content;
+    @BindView (R.id.detail) @Nullable ViewPager detail;
     @BindString(R.string.recipe_error_generic) String genericErrorMessage;
+
+    private StepSlideshowAdapter slideshowAdapter;
 
     private RecipeFragment recipeFragment;
 
@@ -58,6 +70,7 @@ public class RecipeActivity extends AppCompatActivity implements RecipeMvp.View 
         setupFragments();
 
         presenter = new RecipePresenter(new RecipeModel());
+        stepPresenter = new StepPresenter();
 
         RecipeState state;
         if (savedInstanceState == null) {
@@ -75,6 +88,7 @@ public class RecipeActivity extends AppCompatActivity implements RecipeMvp.View 
     protected void onStart() {
         super.onStart();
         presenter.attachView(this);
+        stepPresenter.attachView(RecipeActivity.this);
         presenter.loadData();
     }
 
@@ -87,6 +101,7 @@ public class RecipeActivity extends AppCompatActivity implements RecipeMvp.View 
     @Override
     protected void onStop() {
         presenter.detachView();
+        stepPresenter.detachView();
         super.onStop();
     }
 
@@ -98,6 +113,7 @@ public class RecipeActivity extends AppCompatActivity implements RecipeMvp.View 
     @Override
     public void onRecipeLoaded(@NotNull Recipe recipe) {
         recipeFragment.setDatasource(recipe);
+        stepPresenter.setData(0, recipe.getSteps(), false);
     }
 
     @Override
@@ -122,22 +138,69 @@ public class RecipeActivity extends AppCompatActivity implements RecipeMvp.View 
             recipeFragment = RecipeFragment.newInstance();
             fragmentManager.beginTransaction()
                     .replace(content.getId(), recipeFragment)
-                    .commit();
+                    .commitNow();
         }
 
+        if (detail != null) { detail.setVisibility(View.INVISIBLE); }
+
         recipeFragment.setListener(stepAdapterListener);
+
+        if (detail != null) {
+            slideshowAdapter = new StepSlideshowAdapter(getSupportFragmentManager(), this);
+            detail.setAdapter(slideshowAdapter);
+
+            detail.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+                @Override
+                public void onPageSelected(int position) {
+                    super.onPageSelected(position);
+                    stepPresenter.setCurrentStepIndex(position);
+                }
+            });
+        }
     }
 
+    private StepPresenter stepPresenter;
+    private RecipeStepFragment stepFragment;
     private RecipeStepsAdapter.Listener stepAdapterListener = new RecipeStepsAdapter.Listener() {
         @Override
-        public void onItemClickListener(Step step) {
-            Intent intent = new Intent(RecipeActivity.this, RecipeStepActivity.class);
-            intent.putExtra(RecipeStepActivity.EXTRA_STEP, step);
-            startActivity(intent);
+        public void onItemClickListener(int itemIndex, List<Step> steps) {
+            if (detail != null) {
+                detail.setVisibility(View.VISIBLE);
+
+                stepPresenter.setCurrentStepIndex(itemIndex);
+                stepPresenter.showCurrentStep();
+            } else {
+                Intent intent = new Intent(RecipeActivity.this, RecipeStepActivity.class);
+                intent.putParcelableArrayListExtra(RecipeStepActivity.EXTRA_STEPS, (ArrayList<Step>) steps);
+                intent.putExtra(RecipeStepActivity.EXTRA_STEP_INDEX, itemIndex);
+                startActivity(intent);
+            }
         }
     };
 
     public void setupComponent() {
         BakingAppApplication.appComponent.inject(this);
     }
+
+    @Override
+    public void onNextPress() {
+        stepPresenter.nextStep();
+    }
+
+    @Override
+    public void onPreviousPress() {
+        stepPresenter.previousStep();
+    }
+
+    @Override
+    public void showStep(int position) {
+        Log.d("RECIPE_STEP", "Navigating to index " + position);
+        detail.setCurrentItem(position, true);
+    }
+
+    @Override
+    public void onStepsLoaded(@NotNull List<? extends Step> steps) {
+        slideshowAdapter.setDataSource(steps);
+    }
+
 }

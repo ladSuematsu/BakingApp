@@ -31,7 +31,7 @@ interface StepDao {
                 """
                 SELECT * FROM ${StepRecord.TABLE_NAME}
                 WHERE ${StepRecord.RECIPE_ID_COLUMN_NAME} = :recipeId
-                ORDER BY ${StepRecord.ID_COLUMN_NAME} DESC
+                ORDER BY ${StepRecord.ID_COLUMN_NAME} ASC
                 """
 
         const val QUERY_DELETE_ALL_BY_RECIPE_ID =
