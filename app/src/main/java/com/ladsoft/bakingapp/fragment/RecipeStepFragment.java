@@ -5,7 +5,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,7 +16,6 @@ import android.widget.TextView;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.DefaultRenderersFactory;
 import com.google.android.exoplayer2.ExoPlaybackException;
-import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.LoadControl;
 import com.google.android.exoplayer2.PlaybackParameters;
@@ -60,6 +58,7 @@ public class RecipeStepFragment extends Fragment {
     private boolean playWhenReady = true;
     private MediaSource mediaSource;
     private Callback listener;
+    private static final String STATE_STEP = "STATE_STEP";
 
     public static RecipeStepFragment newInstance() {
         return new RecipeStepFragment();
@@ -115,6 +114,15 @@ public class RecipeStepFragment extends Fragment {
     }
 
     @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        if (savedInstanceState != null) {
+            setDatasource((Step) savedInstanceState.getParcelable(STATE_STEP));
+        }
+    }
+
+    @Override
     public void onStart() {
         Log.d(TAG, "onStart STEP ID " + datasource.getId());
         super.onStart();
@@ -132,6 +140,12 @@ public class RecipeStepFragment extends Fragment {
         if (Util.SDK_INT <= 23 && isVisible()) {
             initializePlayer();
         }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(STATE_STEP, datasource);
     }
 
     @Override

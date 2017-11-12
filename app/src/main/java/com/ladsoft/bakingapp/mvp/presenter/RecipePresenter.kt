@@ -4,6 +4,8 @@ import com.ladsoft.bakingapp.entity.Recipe
 import com.ladsoft.bakingapp.mvp.RecipeMvp
 
 class RecipePresenter(val model: RecipeMvp.Model): Presenter<RecipeMvp.View>(), RecipeMvp.Model.Callback {
+    var activityCreation = true;
+
     init {
         model.setListener(this)
     }
@@ -15,8 +17,12 @@ class RecipePresenter(val model: RecipeMvp.Model): Presenter<RecipeMvp.View>(), 
     }
 
     fun loadData() {
-        view?.showRefresh(true)
-        model.loadRecipe(state.recipeId)
+        when {
+            activityCreation -> {
+                view?.showRefresh(true)
+                model.loadRecipe(state.recipeId)
+            }
+        }
     }
 
     override fun detachView() {
@@ -27,6 +33,7 @@ class RecipePresenter(val model: RecipeMvp.Model): Presenter<RecipeMvp.View>(), 
     override fun onDataLoaded(recipe: Recipe) {
         view?.onRecipeLoaded(recipe)
         view?.showRefresh(false)
+        activityCreation = false
     }
 
     override fun onDataLoadError() {
