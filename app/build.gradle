@@ -35,10 +35,7 @@ android {
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion"
-    androidTestImplementation("com.android.support.test.espresso:espresso-core:$expressoVersion", {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    })
+
     implementation "com.android.support:appcompat-v7:$supportLibraryVersion"
     implementation "com.android.support:recyclerview-v7:$supportLibraryVersion"
     implementation "com.android.support:cardview-v7:$supportLibraryVersion"
@@ -62,6 +59,29 @@ dependencies {
     annotationProcessor "com.google.dagger:dagger-compiler:$daggerVersion"
     kapt "com.google.dagger:dagger-compiler:$daggerVersion"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlinVersion"
+
+    testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion"
+    androidTestImplementation("com.android.support.test.espresso:espresso-core:$expressoVersion", {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    androidTestImplementation("com.android.support.test.espresso:espresso-intents:$expressoVersion", {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    implementation("com.android.support.test.espresso:espresso-idling-resource:$expressoVersion", {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    androidTestImplementation("com.android.support.test:runner:$testRunnerVersion", {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    androidTestImplementation "com.android.support.test.espresso:espresso-contrib:$expressoVersion", {
+        exclude group: 'com.android.support', module: 'support-annotations'
+        exclude group: 'com.android.support', module: 'support-v4'
+        exclude group: 'com.android.support', module: 'design'
+        exclude group: 'com.android.support', module: 'recyclerview-v7'
+    }
+    implementation 'com.jakewharton.espresso:okhttp3-idling-resource:1.0.0', {
+        exclude group: 'com.android.support.test.espresso', module: 'espresso-idling-resource'
+    }
 
 }
 

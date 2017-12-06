@@ -24,7 +24,8 @@ buildscript {
         okHttpLoggingInterceptorVersion = '3.8.1'
 
         junitVersion = '4.12'
-        expressoVersion = '2.2.2'
+        expressoVersion = '3.0.1'
+        testRunnerVersion = '1.0.1'
     }
 
     repositories {
