@@ -1,6 +1,7 @@
 package com.ladsoft.bakingapp.data.network.api
 
 
+import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.ladsoft.bakingapp.BuildConfig
 import okhttp3.OkHttpClient
@@ -9,18 +10,23 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object BakingAppApiModule {
-
     private val API_BASE_URL = BuildConfig.API_BASE_URL
 
-    fun provideApi(): BakingAppApi {
-        val gson = GsonBuilder()
+    val gson: Gson
+    val loggingInterceptor: HttpLoggingInterceptor
+    val okHttpClient: OkHttpClient
+    val api: BakingAppApi
+
+    init {
+        gson = GsonBuilder()
                 .excludeFieldsWithoutExposeAnnotation()
                 .serializeNulls()
                 .create()
 
-        val loggingInterceptor = HttpLoggingInterceptor()
+        loggingInterceptor = HttpLoggingInterceptor()
+
         loggingInterceptor.level = if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BODY else HttpLoggingInterceptor.Level.BASIC
-        val okHttpClient = OkHttpClient.Builder()
+        okHttpClient = OkHttpClient.Builder()
                 .addInterceptor(loggingInterceptor)
                 .build()
 
@@ -30,11 +36,7 @@ object BakingAppApiModule {
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build()
 
-        return restAdapter.create(BakingAppApi::class.java)
+
+        api = restAdapter.create(BakingAppApi::class.java)
     }
-
-//    companion object {
-//        val instance = BakingAppApiModule()
-//    }
-
 }
