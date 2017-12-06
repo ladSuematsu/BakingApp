@@ -57,7 +57,7 @@ public class RecipeStepActivity extends AppCompatActivity implements StepsMvp.Vi
 
             Intent intent = getIntent();
 
-            presenter.setData(intent.getIntExtra(EXTRA_STEP_INDEX, 0), (List<? extends Step>) intent.getParcelableArrayListExtra(EXTRA_STEPS), true);
+            presenter.setData(intent.getIntExtra(EXTRA_STEP_INDEX, 0), (List) intent.getParcelableArrayListExtra(EXTRA_STEPS), true);
             presenter.showCurrentStep();
 
             activityCreation = false;
