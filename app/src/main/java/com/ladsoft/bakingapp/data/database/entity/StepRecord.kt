@@ -3,17 +3,13 @@ package com.ladsoft.bakingapp.data.database.entity
 import android.arch.persistence.room.*
 
 @Entity(tableName = StepRecord.TABLE_NAME,
-        primaryKeys = arrayOf(StepRecord.RECIPE_ID_COLUMN_NAME, StepRecord.ID_COLUMN_NAME),
-        foreignKeys = arrayOf(
-                ForeignKey(entity = RecipeRecord::class,
-                        parentColumns = arrayOf(RecipeRecord.ID_COLUMN_NAME),
-                        childColumns = arrayOf(StepRecord.RECIPE_ID_COLUMN_NAME),
-                        onDelete = ForeignKey.CASCADE
-                )
-            ),
-        indices = arrayOf(
-                Index(value = *arrayOf(StepRecord.RECIPE_ID_COLUMN_NAME, StepRecord.ID_COLUMN_NAME), unique = true)
-            )
+        primaryKeys = [(StepRecord.RECIPE_ID_COLUMN_NAME), (StepRecord.ID_COLUMN_NAME)],
+        foreignKeys = [(ForeignKey(entity = RecipeRecord::class,
+                parentColumns = [RecipeRecord.ID_COLUMN_NAME],
+                childColumns = [StepRecord.RECIPE_ID_COLUMN_NAME],
+                onDelete = ForeignKey.CASCADE
+        ))],
+        indices = [(Index(value = [StepRecord.RECIPE_ID_COLUMN_NAME, StepRecord.ID_COLUMN_NAME], unique = true))]
 )
 data class StepRecord(
         @ColumnInfo(name = ID_COLUMN_NAME) val id: Long,

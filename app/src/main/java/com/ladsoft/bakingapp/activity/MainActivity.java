@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
         } else {
             recipesFragment = RecipesFragment.newInstance();
             fragmentManager.beginTransaction()
-                    .replace(content.getId(), recipesFragment)
+                    .replace(content.getId(), recipesFragment, RecipesFragment.TAG)
                     .commitNow();
         }
 

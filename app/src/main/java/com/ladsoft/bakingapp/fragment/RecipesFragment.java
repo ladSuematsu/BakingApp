@@ -4,7 +4,9 @@ package com.ladsoft.bakingapp.fragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 import android.support.design.widget.Snackbar;
+import android.support.test.espresso.idling.CountingIdlingResource;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -24,19 +26,27 @@ import com.ladsoft.bakingapp.util.UiUtils;
 import com.ladsoft.bakingapp.view.layoutmanager.decoration.SimplePaddingDecoration;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.TestOnly;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import dagger.Module;
 
 public class RecipesFragment extends Fragment implements RecipesMvp.View, SwipeRefreshLayout.OnRefreshListener {
+    public static final String TAG = RecipesFragment.class.getSimpleName();
+
     @BindView(R.id.recipes) RecyclerView recipes;
     @BindView(R.id.refresh) SwipeRefreshLayout refresh;
     private RecipesAdapter adapter;
     private RecipesAdapter.Listener recipeAdapterListener;
     private RecipesPresenter presenter;
     private String genericErrorMessage;
+
+    @Inject RecipesMvp.Model model;
 
     public static RecipesFragment newInstance() {
         return new RecipesFragment();
@@ -52,7 +62,6 @@ public class RecipesFragment extends Fragment implements RecipesMvp.View, SwipeR
 
         genericErrorMessage = getString(R.string.recipes_error);
 
-        RecipesModel model = new RecipesModel();
         presenter = new RecipesPresenter(model);
     }
 
@@ -122,5 +131,20 @@ public class RecipesFragment extends Fragment implements RecipesMvp.View, SwipeR
     @Override
     public void showRefresh(boolean show) {
         refresh.setRefreshing(show);
+
+//        if (show && idlingResource.isIdleNow()) {
+//            idlingResource.increment();
+//        } else if (!idlingResource.isIdleNow()){
+//            idlingResource.decrement();
+//        }
+
     }
+
+//    @VisibleForTesting
+//    private CountingIdlingResource idlingResource = new CountingIdlingResource(RecipesFragment.class.getSimpleName());
+
+//    @VisibleForTesting
+//    public CountingIdlingResource getCountingIdlingResource() {
+//        return idlingResource;
+//    }
 }

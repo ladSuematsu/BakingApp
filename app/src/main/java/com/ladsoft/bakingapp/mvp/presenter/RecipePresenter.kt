@@ -4,7 +4,7 @@ import com.ladsoft.bakingapp.entity.Recipe
 import com.ladsoft.bakingapp.mvp.RecipeMvp
 
 class RecipePresenter(val model: RecipeMvp.Model): Presenter<RecipeMvp.View>(), RecipeMvp.Model.Callback {
-    var activityCreation = true;
+    var activityCreation = true
 
     init {
         model.setListener(this)
