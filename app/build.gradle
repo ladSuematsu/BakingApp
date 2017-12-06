@@ -7,7 +7,7 @@ android {
     String STRING = "String"
     String P_INT = "int"
 
-    compileSdkVersion rootProject.compiledSdkVersion
+    compileSdkVersion rootProject.compileSdkVersion
     buildToolsVersion rootProject.buildToolsVersion
 
     defaultConfig {

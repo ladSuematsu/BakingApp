@@ -5,11 +5,11 @@ buildscript {
         // SDK and tools
         minSdkVersion = 19
         targetSdkVersion = 26
-        compiledSdkVersion = 26
-        buildToolsVersion = '27.0.0'
+        compileSdkVersion = 27
+        buildToolsVersion = '27.0.2'
 
         // App dependendencies
-        supportLibraryVersion = '26.1.0'
+        supportLibraryVersion = '27.0.2'
         constraintLayoutVersion = '1.0.2'
         exoplayerVersion = 'r2.5.4'
 
