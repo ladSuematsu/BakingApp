@@ -1,6 +1,7 @@
 package com.ladsoft.bakingapp.fragment;
 
 
+import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -65,6 +66,13 @@ public class RecipeStepFragment extends Fragment {
     }
 
     @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        listener = (Callback) getActivity();
+    }
+
+    @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
@@ -101,15 +109,6 @@ public class RecipeStepFragment extends Fragment {
 
             if (mediaSource != null) { mediaSource.releaseSource(); }
             if (mediaPlayer != null) { mediaPlayer.clearVideoSurface(); }
-        } else {
-            stepDescription.setText(datasource.getDescription());
-
-            if (datasource.getVideoUrl() != null) {
-                Uri mediaUri = Uri.parse(datasource.getVideoUrl());
-                Log.d(TAG, "Step media Uri: " + mediaUri.toString());
-
-                mediaSource = buildMediaSource(mediaUri);
-            }
         }
     }
 
@@ -118,8 +117,10 @@ public class RecipeStepFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         if (savedInstanceState != null) {
-            setDatasource((Step) savedInstanceState.getParcelable(STATE_STEP));
+            this.datasource = savedInstanceState.getParcelable(STATE_STEP);
         }
+
+        bindDatasource();
     }
 
     @Override
@@ -275,23 +276,27 @@ public class RecipeStepFragment extends Fragment {
         this.datasource = datasource;
 
         if (isVisible()) {
-            if (datasource == null) {
-                stepDescription.setText(null);
+            bindDatasource();
+        }
+    }
 
-                if (mediaSource != null) {
-                    mediaSource.releaseSource();
-                    mediaPlayer.clearVideoSurface();
-                }
-            } else {
-                stepDescription.setText(datasource.getDescription());
+    private void bindDatasource() {
+        if (this.datasource == null) {
+            stepDescription.setText(null);
 
-                if (datasource.getVideoUrl() != null) {
-                    Uri mediaUri = Uri.parse(datasource.getVideoUrl());
-                    Log.d(TAG, "Step media Uri: " + mediaUri.toString());
+            if (mediaSource != null) {
+                mediaSource.releaseSource();
+                mediaPlayer.clearVideoSurface();
+            }
+        } else {
+            stepDescription.setText(this.datasource.getDescription());
 
-                    mediaSource = buildMediaSource(mediaUri);
-                    initializePlayer();
-                }
+            if (this.datasource.getVideoUrl() != null) {
+                Uri mediaUri = Uri.parse(this.datasource.getVideoUrl());
+                Log.d(TAG, "Step media Uri: " + mediaUri.toString());
+
+                mediaSource = buildMediaSource(mediaUri);
+                initializePlayer();
             }
         }
     }
