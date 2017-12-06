@@ -67,7 +67,7 @@ public class RecipeActivity extends AppCompatActivity implements RecipeMvp.View,
         setupComponent();
 
         setupViews();
-        setupFragments();
+        setupFragments(savedInstanceState != null);
 
         presenter = new RecipePresenter(new RecipeModel());
         stepPresenter = new StepPresenter();
@@ -113,7 +113,7 @@ public class RecipeActivity extends AppCompatActivity implements RecipeMvp.View,
     @Override
     public void onRecipeLoaded(@NotNull Recipe recipe) {
         recipeFragment.setDatasource(recipe);
-        stepPresenter.setData(0, recipe.getSteps(), false);
+        stepPresenter.setData(0, recipe.getSteps(), true);
     }
 
     @Override
@@ -131,7 +131,7 @@ public class RecipeActivity extends AppCompatActivity implements RecipeMvp.View,
 
     }
 
-    private void setupFragments() {
+    private void setupFragments(boolean isRestore) {
         FragmentManager fragmentManager = getSupportFragmentManager();
 
         if ((recipeFragment = (RecipeFragment) fragmentManager.findFragmentById(content.getId())) == null) {
@@ -141,12 +141,14 @@ public class RecipeActivity extends AppCompatActivity implements RecipeMvp.View,
                     .commitNow();
         }
 
-        if (detail != null) { detail.setVisibility(View.INVISIBLE); }
+        if (detail != null && !isRestore) {
+            detail.setVisibility(View.INVISIBLE);
+        }
 
         recipeFragment.setListener(stepAdapterListener);
 
         if (detail != null) {
-            slideshowAdapter = new StepSlideshowAdapter(getSupportFragmentManager(), this);
+            slideshowAdapter = new StepSlideshowAdapter(getSupportFragmentManager());
             detail.setAdapter(slideshowAdapter);
 
             detail.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
@@ -160,7 +162,6 @@ public class RecipeActivity extends AppCompatActivity implements RecipeMvp.View,
     }
 
     private StepPresenter stepPresenter;
-    private RecipeStepFragment stepFragment;
     private RecipeStepsAdapter.Listener stepAdapterListener = new RecipeStepsAdapter.Listener() {
         @Override
         public void onItemClickListener(int itemIndex, List<Step> steps) {
@@ -200,7 +201,9 @@ public class RecipeActivity extends AppCompatActivity implements RecipeMvp.View,
 
     @Override
     public void onStepsLoaded(@NotNull List<? extends Step> steps) {
-        slideshowAdapter.setDataSource(steps);
+        if (detail != null) {
+            slideshowAdapter.setDataSource(steps);
+        }
     }
 
 }
