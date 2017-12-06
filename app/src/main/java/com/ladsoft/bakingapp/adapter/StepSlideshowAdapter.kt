@@ -17,8 +17,8 @@ class StepSlideshowAdapter(fragmentManager: FragmentManager): FragmentStatePager
         }
     }
 
-    override fun getItemPosition(_object: Any?): Int {
-        return POSITION_NONE // Always recreate fragments
+    override fun getItemPosition(`object`: Any): Int {
+        return POSITION_NONE
     }
 
     override fun getCount(): Int = steps.size

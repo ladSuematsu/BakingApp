@@ -13,7 +13,7 @@ buildscript {
         constraintLayoutVersion = '1.0.2'
         exoplayerVersion = 'r2.5.4'
 
-        kotlinVersion = '1.1.51+'
+        kotlinVersion = '1.2.+'
         roomVersion = '1.0.0-alpha9-1'
         daggerVersion = '2.11'
         butterKnifeVersion = '8.8.1'
@@ -32,7 +32,7 @@ buildscript {
         google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.0'
+        classpath 'com.android.tools.build:gradle:3.0.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
 
         // NOTE: Do not place your application dependencies here; they belong
