@@ -13,6 +13,7 @@ import com.ladsoft.bakingapp.adapter.RecipesAdapter;
 import com.ladsoft.bakingapp.entity.Recipe;
 import com.ladsoft.bakingapp.fragment.RecipeFragment;
 import com.ladsoft.bakingapp.fragment.RecipesFragment;
+import com.ladsoft.bakingapp.mvp.RecipeMvp;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -50,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onItemClickListener(Recipe recipe) {
             Intent intent = new Intent(MainActivity.this, RecipeActivity.class);
-            intent.putExtra(RecipeActivity.EXTRA_RECIPE_ID, recipe.getId());
+            intent.putExtra(RecipeMvp.StateContainer.Companion.getEXTRA_RECIPE_ID(), recipe.getId());
             startActivity(intent);
         }
     };

@@ -131,20 +131,5 @@ public class RecipesFragment extends Fragment implements RecipesMvp.View, SwipeR
     @Override
     public void showRefresh(boolean show) {
         refresh.setRefreshing(show);
-
-//        if (show && idlingResource.isIdleNow()) {
-//            idlingResource.increment();
-//        } else if (!idlingResource.isIdleNow()){
-//            idlingResource.decrement();
-//        }
-
     }
-
-//    @VisibleForTesting
-//    private CountingIdlingResource idlingResource = new CountingIdlingResource(RecipesFragment.class.getSimpleName());
-
-//    @VisibleForTesting
-//    public CountingIdlingResource getCountingIdlingResource() {
-//        return idlingResource;
-//    }
 }

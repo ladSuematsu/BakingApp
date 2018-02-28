@@ -21,10 +21,12 @@ interface RecipeMvp {
     }
 
     interface StateContainer {
-        val EXTRA_RECIPE_ID: String get() = "extra_recipe_id"
-
         var recipeId : Long
 
         fun getStateMap() : HashMap<String, Any>
+
+        companion object {
+            val EXTRA_RECIPE_ID: String get() = "extra_recipe_id"
+        }
     }
 }

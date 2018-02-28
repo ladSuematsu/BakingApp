@@ -56,7 +56,7 @@ public class RecipesAdapter extends RecyclerView.Adapter<RecipesAdapter.RecipeVi
         this.callback = listener;
     }
 
-    class RecipeViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class RecipeViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         @BindView(R.id.title) TextView title;
 
         RecipeViewHolder(View itemView) {

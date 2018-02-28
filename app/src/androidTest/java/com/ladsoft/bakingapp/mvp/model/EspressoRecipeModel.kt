@@ -6,48 +6,41 @@ import com.ladsoft.bakingapp.data.database.repository.DatabaseStepRepository
 import com.ladsoft.bakingapp.data.repository.RecipeRepository
 import com.ladsoft.bakingapp.entity.Recipe
 import com.ladsoft.bakingapp.mvp.EspressoIdlingResource
+import com.ladsoft.bakingapp.mvp.RecipeMvp
 import com.ladsoft.bakingapp.mvp.RecipesMvp
 
 
-class EspressoRecipeModel (recipesRepository: RecipeRepository,
-                           cacheRecipesRepository: DatabaseRecipeRepository,
-                           cacheIngredientRepository: DatabaseIngredientRepository,
-                           cacheStepRepository: DatabaseStepRepository): RecipesMvp.Model, RecipesMvp.Model.Callback {
-    private val model: RecipesMvp.Model = RecipesModel(recipesRepository,
-        cacheRecipesRepository,
+class EspressoRecipeModel(cacheRecipesRepository: DatabaseRecipeRepository,
+                          cacheIngredientRepository: DatabaseIngredientRepository,
+                          cacheStepRepository: DatabaseStepRepository): RecipeMvp.Model, RecipeMvp.Model.Callback {
+    private val model: RecipeMvp.Model = RecipeModel(cacheRecipesRepository,
         cacheIngredientRepository,
         cacheStepRepository)
-    private var listener: RecipesMvp.Model.Callback? = null
+    private var listener: RecipeMvp.Model.Callback? = null
 
-    override fun setListener(listener: RecipesMvp.Model.Callback) {
+    override fun setListener(listener: RecipeMvp.Model.Callback) {
         this.listener = listener
         model.setListener(this)
     }
 
-    override fun detachRecipesModelListener() {
+    override fun detachListener() {
         this.listener = null
-        model.detachRecipesModelListener()
+        model.detachListener()
     }
 
-    override fun loadRecipes() {
+    override fun loadRecipe(recipeId: Long) {
         EspressoIdlingResource.increment()
-        model.loadRecipes()
+        model.loadRecipe(recipeId)
     }
 
-    override fun onDataLoaded(recipes: List<Recipe>) {
+    override fun onDataLoaded(recipe: Recipe) {
         EspressoIdlingResource.decrement()
-        listener?.onDataLoaded(recipes)
-    }
-
-    override fun onDataLoadError(recipes: List<Recipe>) {
-        EspressoIdlingResource.decrement()
-        listener?.onDataLoadError(recipes)
+        listener?.onDataLoaded(recipe)
     }
 
     override fun onDataLoadError() {
         EspressoIdlingResource.decrement()
         listener?.onDataLoadError()
     }
-
 
 }

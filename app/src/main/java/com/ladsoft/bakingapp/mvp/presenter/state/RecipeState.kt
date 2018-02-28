@@ -17,7 +17,7 @@ class RecipeState: RecipeMvp.StateContainer {
     }
 
     constructor(bundle: Bundle?) {
-        (bundle?.getLong(EXTRA_RECIPE_ID) ?: 0L).apply {
+        (bundle?.getLong(RecipeMvp.StateContainer.EXTRA_RECIPE_ID) ?: 0L).apply {
             recipeId = this
             sessionManager.setLastSelectedReceiptId(this)
         }
@@ -26,13 +26,13 @@ class RecipeState: RecipeMvp.StateContainer {
     constructor(serializable: Serializable?) {
         serializable?.apply {
             val stateMap = serializable as HashMap<*, *>
-            recipeId = stateMap[EXTRA_RECIPE_ID] as Long
+            recipeId = stateMap[RecipeMvp.StateContainer.EXTRA_RECIPE_ID] as Long
         }
     }
 
     override fun getStateMap(): HashMap<String, Any> {
         val stateMap = HashMap<String, Any>()
-        stateMap.put(EXTRA_RECIPE_ID, recipeId)
+        stateMap.put(RecipeMvp.StateContainer.EXTRA_RECIPE_ID, recipeId)
 
         return stateMap
     }
