@@ -52,7 +52,7 @@ public class RecipeStepsAdapter extends RecyclerView.Adapter<RecipeStepsAdapter.
         this.listener = listener;
     }
 
-    class StepViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class StepViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         @BindView(R.id.step) TextView step;
 
         StepViewHolder(View itemView) {
