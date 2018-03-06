@@ -4,7 +4,6 @@ import android.content.Intent
 import android.support.test.InstrumentationRegistry
 import android.support.test.espresso.Espresso
 import android.support.test.espresso.IdlingRegistry
-import android.support.test.espresso.ViewAction
 import android.support.test.espresso.action.ScrollToAction
 import android.support.test.espresso.action.ViewActions
 import android.support.test.espresso.assertion.ViewAssertions
@@ -14,14 +13,12 @@ import android.support.test.espresso.intent.matcher.IntentMatchers
 import android.support.test.espresso.matcher.ViewMatchers
 import android.support.test.rule.ActivityTestRule
 import android.support.test.runner.AndroidJUnit4
-import android.support.v4.widget.NestedScrollView
-import android.view.View
 import com.ladsoft.bakingapp.activity.RecipeActivity
 import com.ladsoft.bakingapp.activity.RecipeStepActivity
 import com.ladsoft.bakingapp.adapter.RecipeStepsAdapter
 import com.ladsoft.bakingapp.mvp.EspressoIdlingResource
 import com.ladsoft.bakingapp.mvp.RecipeMvp
-import org.hamcrest.Matcher
+import com.ladsoft.bakingapp.viewaction.NestedScrollToAction
 import org.hamcrest.Matchers
 import org.junit.After
 import org.junit.Before
@@ -41,7 +38,7 @@ class RecipeDetailsFragmentTest {
 
             return Intent(targetContext, RecipeActivity::class.java)
                     .putExtra(RecipeMvp.StateContainer.Companion.EXTRA_RECIPE_ID,
-                                Utils.BROWNIES_RECIPE_ID)
+                                TestValues.BROWNIES_RECIPE_ID)
         }
     }
 
@@ -65,31 +62,20 @@ class RecipeDetailsFragmentTest {
                 )
     }
 
-    class NestedScrollToAction (private val original: ScrollToAction): ViewAction by original {
-        override fun getConstraints(): Matcher<View> = Matchers.anyOf(
-                Matchers.allOf(
-                        ViewMatchers.withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE),
-                        ViewMatchers.isDescendantOfA(ViewMatchers.isAssignableFrom(NestedScrollView::class.java))
-                ),
-                original.constraints
-        )
-    }
-
     @Test
     fun loadRecipeStep() {
-        val STEP_TEXT = "Starting prep"
-
         Espresso.onView(ViewMatchers.withId(R.id.steps))
                 .perform(ViewActions.actionWithAssertions(NestedScrollToAction(ScrollToAction())))
-                .check(ViewAssertions.matches(
-                        Matchers.allOf(ViewMatchers.hasMinimumChildCount(2),
-                                        ViewMatchers.hasDescendant(ViewMatchers.withText(STEP_TEXT))
-                            )
-                    ))
-                .perform(RecyclerViewActions.scrollTo<RecipeStepsAdapter.StepViewHolder>(ViewMatchers.hasDescendant(ViewMatchers.withText(STEP_TEXT))))
+                .check(ViewAssertions.matches(Matchers.allOf(
+                                        ViewMatchers.hasMinimumChildCount(2),
+                                        ViewMatchers.hasDescendant(ViewMatchers.withText(TestValues.BROWNIES_STEP_TEXT)))
+                                    ))
+                .perform(RecyclerViewActions.scrollTo<RecipeStepsAdapter.StepViewHolder>(ViewMatchers.hasDescendant(ViewMatchers.withText(TestValues.BROWNIES_STEP_TEXT))))
                 .perform(RecyclerViewActions.actionOnItemAtPosition<RecipeStepsAdapter.StepViewHolder>(1, ViewActions.click()))
 
         Intents.intended(IntentMatchers.hasComponent(RecipeStepActivity::class.qualifiedName))
+        Intents.intended(IntentMatchers.hasExtraWithKey(RecipeStepActivity.EXTRA_STEPS))
+        Intents.intended(IntentMatchers.hasExtraWithKey(RecipeStepActivity.EXTRA_STEP_INDEX))
     }
 
     @After

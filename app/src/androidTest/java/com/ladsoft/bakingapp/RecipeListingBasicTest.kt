@@ -11,7 +11,6 @@ import android.support.test.espresso.matcher.ViewMatchers
 import android.support.test.rule.ActivityTestRule
 import android.support.test.runner.AndroidJUnit4
 import android.support.v7.widget.RecyclerView
-import android.test.suitebuilder.annotation.LargeTest
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
@@ -30,7 +29,6 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-@LargeTest
 @RunWith(AndroidJUnit4::class)
 class RecipeListingBasicTest {
 
@@ -64,24 +62,24 @@ class RecipeListingBasicTest {
 
         val matcher = object: TypeSafeMatcher<RecipesAdapter.RecipeViewHolder>() {
             override fun describeTo(description: Description?) {
-                description?.appendText("List item found with content " + Utils.BROWNIES_RECIPE_TEXT)
+                description?.appendText("List item found with content " + TestValues.BROWNIES_RECIPE_TEXT)
             }
 
             override fun matchesSafely(item: RecipesAdapter.RecipeViewHolder?): Boolean {
                 val recipeNameTextView = item?.itemView?.findViewById<TextView>(R.id.title)
 
-                return recipeNameTextView?.text?.toString().equals(Utils.BROWNIES_RECIPE_TEXT)
+                return recipeNameTextView?.text?.toString().equals(TestValues.BROWNIES_RECIPE_TEXT)
             }
         }
 
         Espresso.onView(ViewMatchers.withId(R.id.recipes))
                 .perform(RecyclerViewActions.scrollToHolder(matcher))
                 .perform(RecyclerViewActions.actionOnItem<RecipesAdapter.RecipeViewHolder>(
-                        ViewMatchers.hasDescendant(ViewMatchers.withText(Utils.BROWNIES_RECIPE_TEXT)),
+                        ViewMatchers.hasDescendant(ViewMatchers.withText(TestValues.BROWNIES_RECIPE_TEXT)),
                         ViewActions.click()))
 
         Intents.intended(IntentMatchers.hasComponent(RecipeActivity::class.qualifiedName))
-        Intents.intended(IntentMatchers.hasExtra(RecipeMvp.StateContainer.EXTRA_RECIPE_ID, Utils.BROWNIES_RECIPE_ID))
+        Intents.intended(IntentMatchers.hasExtra(RecipeMvp.StateContainer.EXTRA_RECIPE_ID, TestValues.BROWNIES_RECIPE_ID))
     }
 
 
