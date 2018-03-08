@@ -2,4 +2,7 @@
     <string name="recipe_label_ingredients_list">Ingredients</string>
     <string name="recipe_label_steps_list">Steps</string>
     <string name="recipe_error_generic">Something went wrong</string>
+    <string name="recipe_serving_count_format">%d servings</string>
+    <string name="recipe_ingredient_count_format">%d ingredients</string>
+    <string name="recipe_step_count_format">%d steps</string>
 </resources>

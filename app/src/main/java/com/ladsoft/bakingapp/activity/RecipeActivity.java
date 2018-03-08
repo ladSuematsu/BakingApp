@@ -11,6 +11,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 
 import com.ladsoft.bakingapp.R;
 import com.ladsoft.bakingapp.adapter.RecipeStepsAdapter;
@@ -48,6 +49,10 @@ public class RecipeActivity extends AppCompatActivity implements RecipeMvp.View,
     @Inject SessionManager sessionManager;
     @Inject RecipeMvp.Model model;
     @BindView(R.id.toolbar) Toolbar toolbar;
+    @BindView(R.id.recipe_name) TextView recipeName;
+    @BindView(R.id.servings) TextView servings;
+    @BindView(R.id.ingredient_count) TextView ingredientCount;
+    @BindView(R.id.step_count) TextView stepCount;
     @BindView(R.id.content) FrameLayout content;
     @BindView (R.id.detail) @Nullable ViewPager detail;
     @BindString(R.string.recipe_error_generic) String genericErrorMessage;
@@ -113,6 +118,18 @@ public class RecipeActivity extends AppCompatActivity implements RecipeMvp.View,
 
     @Override
     public void onRecipeLoaded(@NotNull Recipe recipe) {
+        recipeName.setText(recipe.getName());
+        toolbar.setTitle(recipe.getName());
+
+        servings.setText(String.format(getString(R.string.recipe_serving_count_format),
+                recipe.getServings()));
+
+        ingredientCount.setText(String.format(getString(R.string.recipe_ingredient_count_format),
+                recipe.getIngredientCount()));
+
+        stepCount.setText(String.format(getString(R.string.recipe_step_count_format),
+                recipe.getStepCount()));
+
         recipeFragment.setDatasource(recipe);
         stepPresenter.setData(0, recipe.getSteps(), true);
     }
