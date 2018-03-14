@@ -50,7 +50,6 @@ public class RecipeFragment extends Fragment {
 
         ingredients.setNestedScrollingEnabled(false);
         ingredients.setLayoutManager(new LinearLayoutManager(getContext()));
-        ingredients.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
         ingredientsAdapter = new RecipeIngredientsAdapter(LayoutInflater.from(getContext()));
         ingredients.setAdapter(ingredientsAdapter);
 
