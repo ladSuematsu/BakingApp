@@ -43,22 +43,27 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class RecipeStepFragment extends Fragment {
+    public interface Callback {
+        void onNextPress();
+        void onPreviousPress();
+        Step onVisible();
+    }
 
     private static final String TAG = RecipeStepFragment.class.getSimpleName();
-
     @BindView(R.id.next) Button stepNext;
     @BindView(R.id.previous) Button stepPrevious;
+
     @BindView(R.id.step_description) TextView stepDescription;
 
     @BindView(R.id.media_player) SimpleExoPlayerView mediaPlayerView;
 
     private long playbackPosition;
-
     private Step datasource;
     private int currentWindow;
     private boolean playWhenReady = true;
     private MediaSource mediaSource;
     private Callback listener;
+
     private static final String STATE_STEP = "STATE_STEP";
 
     public static RecipeStepFragment newInstance() {
@@ -119,27 +124,23 @@ public class RecipeStepFragment extends Fragment {
         if (savedInstanceState != null) {
             this.datasource = savedInstanceState.getParcelable(STATE_STEP);
         }
-
-        bindDatasource();
     }
 
     @Override
     public void onStart() {
-        Log.d(TAG, "onStart STEP ID " + datasource.getId());
         super.onStart();
 
-        if (Util.SDK_INT > 23 && isVisible()) {
-            initializePlayer();
+        if (Util.SDK_INT > 23 && playWhenReady) {
+            bindDatasource();
         }
     }
 
     @Override
     public void onResume() {
-        Log.d(TAG, "onResume STEP ID " + datasource.getId());
         super.onResume();
 
-        if (Util.SDK_INT <= 23 && isVisible()) {
-            initializePlayer();
+        if (Util.SDK_INT <= 23 && playWhenReady) {
+            bindDatasource();
         }
     }
 
@@ -153,26 +154,17 @@ public class RecipeStepFragment extends Fragment {
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
 
-        Log.d(TAG, "user visible hint STEP ID " + datasource.getId() + " " + isVisibleToUser);
+        if (playWhenReady = isVisibleToUser) {
 
-        playWhenReady = isVisibleToUser;
-        if (isVisibleToUser) {
-            if (mediaPlayer != null) {
-                Log.d(TAG, "user visible hint autoplaying STEP ID " + datasource.getId());
-                mediaPlayer.setPlayWhenReady(playWhenReady);
-            }
-        } else {
-            if (mediaPlayer != null) {
-                Log.d(TAG, "user visible hint autoPausing STEP ID " + datasource.getId());
-
-                mediaPlayer.setPlayWhenReady(false);
+            if (isResumed()) {
+                bindDatasource();
             }
         }
+
     }
 
     @Override
     public void onPause() {
-        Log.d(TAG, "onPause STEP ID " + datasource.getId());
         if (Util.SDK_INT <= 23) {
             releasePlayer();
         }
@@ -181,7 +173,6 @@ public class RecipeStepFragment extends Fragment {
 
     @Override
     public void onStop() {
-        Log.d(TAG, "onStop STEP ID " + datasource.getId());
         if (Util.SDK_INT > 23) {
             releasePlayer();
         }
@@ -197,7 +188,7 @@ public class RecipeStepFragment extends Fragment {
             mediaPlayer = ExoPlayerFactory.newSimpleInstance(renderersFactory, trackSelector, loadControl);
             mediaPlayer.addListener(playerListener);
 
-            if (playWhenReady) {
+            if (playWhenReady && datasource != null) {
                 Log.d(TAG, "initializePlayer: autoPlaying media  STEP ID " + datasource.getId());
             }
             mediaPlayerView.setPlayer(mediaPlayer);
@@ -223,8 +214,8 @@ public class RecipeStepFragment extends Fragment {
             mediaPlayer = null;
         }
     }
-
     private static final DefaultBandwidthMeter BANDWIDTH_METER = new DefaultBandwidthMeter();
+
     private MediaSource buildMediaSource(Uri uri) {
         DataSource.Factory dataSourceFactory = new DefaultHttpDataSourceFactory("ua", BANDWIDTH_METER);
         ExtractorsFactory extractorsFactory = new DefaultExtractorsFactory();
@@ -272,15 +263,9 @@ public class RecipeStepFragment extends Fragment {
         listener = callback;
     }
 
-    public void setDatasource(Step datasource) {
-        this.datasource = datasource;
-
-        if (isVisible()) {
-            bindDatasource();
-        }
-    }
-
     private void bindDatasource() {
+        datasource = listener.onVisible();
+
         if (this.datasource == null) {
             stepDescription.setText(null);
 
@@ -299,10 +284,5 @@ public class RecipeStepFragment extends Fragment {
                 initializePlayer();
             }
         }
-    }
-
-    public interface Callback {
-        void onNextPress();
-        void onPreviousPress();
     }
 }

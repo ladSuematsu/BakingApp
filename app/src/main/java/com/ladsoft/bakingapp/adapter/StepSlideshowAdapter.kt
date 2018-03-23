@@ -3,17 +3,16 @@ package com.ladsoft.bakingapp.adapter
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentStatePagerAdapter
-import android.support.v4.view.PagerAdapter
 import com.ladsoft.bakingapp.entity.Step
 import com.ladsoft.bakingapp.fragment.RecipeStepFragment
 
 
-class StepSlideshowAdapter(fragmentManager: FragmentManager): FragmentStatePagerAdapter(fragmentManager) {
+class StepSlideshowAdapter(val fragmentManager: FragmentManager, val listener: RecipeStepFragment.Callback): FragmentStatePagerAdapter(fragmentManager) {
     private var steps : List<Step> = mutableListOf()
 
     override fun getItem(position: Int): Fragment {
-        return RecipeStepFragment.newInstance().apply {
-            setDatasource(steps[position])
+        return RecipeStepFragment.newInstance().apply{
+            setListener(listener)
         }
     }
 

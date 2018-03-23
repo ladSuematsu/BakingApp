@@ -131,7 +131,7 @@ public class RecipeActivity extends AppCompatActivity implements RecipeMvp.View,
                 recipe.getStepCount()));
 
         recipeFragment.setDatasource(recipe);
-        stepPresenter.setData(0, recipe.getSteps(), true);
+        stepPresenter.setData(0, recipe.getSteps(), false);
     }
 
     @Override
@@ -166,7 +166,7 @@ public class RecipeActivity extends AppCompatActivity implements RecipeMvp.View,
         recipeFragment.setListener(stepAdapterListener);
 
         if (detail != null) {
-            slideshowAdapter = new StepSlideshowAdapter(getSupportFragmentManager());
+            slideshowAdapter = new StepSlideshowAdapter(getSupportFragmentManager(), this);
             detail.setAdapter(slideshowAdapter);
 
             detail.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
@@ -209,6 +209,11 @@ public class RecipeActivity extends AppCompatActivity implements RecipeMvp.View,
     @Override
     public void onPreviousPress() {
         stepPresenter.previousStep();
+    }
+
+    @Override
+    public Step onVisible() {
+        return stepPresenter.stepData();
     }
 
     @Override

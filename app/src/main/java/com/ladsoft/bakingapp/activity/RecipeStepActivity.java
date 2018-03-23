@@ -80,7 +80,7 @@ public class RecipeStepActivity extends AppCompatActivity implements StepsMvp.Vi
     }
 
     private void setupFragments() {
-        slideshowAdapter = new StepSlideshowAdapter(getSupportFragmentManager());
+        slideshowAdapter = new StepSlideshowAdapter(getSupportFragmentManager(), this);
         content.setAdapter(slideshowAdapter);
 
         content.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
@@ -105,6 +105,11 @@ public class RecipeStepActivity extends AppCompatActivity implements StepsMvp.Vi
     @Override
     public void onPreviousPress() {
         presenter.previousStep();
+    }
+
+    @Override
+    public Step onVisible() {
+        return presenter.stepData();
     }
 
     @Override
