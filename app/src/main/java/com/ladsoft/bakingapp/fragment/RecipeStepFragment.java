@@ -50,6 +50,9 @@ public class RecipeStepFragment extends Fragment {
     }
 
     private static final String TAG = RecipeStepFragment.class.getSimpleName();
+    private static final String STATE_DATASOURCE = "state_playback_position";
+    private static final String STATE_PLAYBACK_POSITION = "state_playback_position";
+
     @BindView(R.id.next) Button stepNext;
     @BindView(R.id.previous) Button stepPrevious;
 
@@ -60,11 +63,11 @@ public class RecipeStepFragment extends Fragment {
     private long playbackPosition;
     private Step datasource;
     private int currentWindow;
-    private boolean playWhenReady = true;
     private MediaSource mediaSource;
     private Callback listener;
 
-    private static final String STATE_STEP = "STATE_STEP";
+    private boolean playWhenReady = false;
+    private boolean isViewCreated = false;
 
     public static RecipeStepFragment newInstance() {
         return new RecipeStepFragment();
@@ -77,11 +80,6 @@ public class RecipeStepFragment extends Fragment {
         listener = (Callback) getActivity();
     }
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -89,11 +87,10 @@ public class RecipeStepFragment extends Fragment {
         ButterKnife.bind(this, view);
         return view;
     }
-
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
+        isViewCreated = true;
 
         stepPrevious.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -122,7 +119,8 @@ public class RecipeStepFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         if (savedInstanceState != null) {
-            this.datasource = savedInstanceState.getParcelable(STATE_STEP);
+            this.datasource = savedInstanceState.getParcelable(STATE_DATASOURCE);
+            this.playbackPosition = savedInstanceState.getLong(STATE_PLAYBACK_POSITION);
         }
     }
 
@@ -130,7 +128,10 @@ public class RecipeStepFragment extends Fragment {
     public void onStart() {
         super.onStart();
 
-        if (Util.SDK_INT > 23 && playWhenReady) {
+        if (Util.SDK_INT > 23
+                && playWhenReady
+//                && getUserVisibleHint()
+                ) {
             bindDatasource();
         }
     }
@@ -139,7 +140,10 @@ public class RecipeStepFragment extends Fragment {
     public void onResume() {
         super.onResume();
 
-        if (Util.SDK_INT <= 23 && playWhenReady) {
+        if (Util.SDK_INT <= 23
+                && playWhenReady
+//                && getUserVisibleHint()
+        ) {
             bindDatasource();
         }
     }
@@ -147,26 +151,27 @@ public class RecipeStepFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable(STATE_STEP, datasource);
+        outState.putParcelable(STATE_DATASOURCE, datasource);
+        outState.putLong(STATE_PLAYBACK_POSITION, playbackPosition);
     }
 
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
 
-        if (playWhenReady = isVisibleToUser) {
-
-            if (isResumed()) {
-                bindDatasource();
-            }
+        playWhenReady = isVisibleToUser;
+        boolean isResumed = isResumed();
+        if (playWhenReady && isResumed) {
+            bindDatasource();
+        } else if (!playWhenReady && isResumed) {
+            releasePlayer(false);
         }
-
     }
 
     @Override
     public void onPause() {
         if (Util.SDK_INT <= 23) {
-            releasePlayer();
+            releasePlayer(true);
         }
         super.onPause();
     }
@@ -174,7 +179,7 @@ public class RecipeStepFragment extends Fragment {
     @Override
     public void onStop() {
         if (Util.SDK_INT > 23) {
-            releasePlayer();
+            releasePlayer(true);
         }
         super.onStop();
     }
@@ -193,7 +198,9 @@ public class RecipeStepFragment extends Fragment {
             }
             mediaPlayerView.setPlayer(mediaPlayer);
 
-            mediaPlayer.setPlayWhenReady(playWhenReady);
+//            mediaPlayer.setPlayWhenReady(playWhenReady);
+            mediaPlayer.setPlayWhenReady(true);
+
             mediaPlayer.seekTo(currentWindow, playbackPosition);
             mediaPlayerView.hideController();
         }
@@ -203,9 +210,9 @@ public class RecipeStepFragment extends Fragment {
         }
     }
 
-    private void releasePlayer() {
+    private void releasePlayer(boolean keepPlaybackPosition) {
         if (mediaPlayer != null) {
-            playbackPosition = mediaPlayer.getCurrentPosition();
+            playbackPosition = keepPlaybackPosition ? mediaPlayer.getCurrentPosition() : 0L;
             currentWindow = mediaPlayer.getCurrentWindowIndex();
             playWhenReady = mediaPlayer.getPlayWhenReady();
 
@@ -264,7 +271,11 @@ public class RecipeStepFragment extends Fragment {
     }
 
     private void bindDatasource() {
-        datasource = listener.onVisible();
+        if (datasource == null) {
+            datasource = listener.onVisible();
+        }
+
+        if (!isViewCreated) { return; }
 
         if (this.datasource == null) {
             stepDescription.setText(null);
