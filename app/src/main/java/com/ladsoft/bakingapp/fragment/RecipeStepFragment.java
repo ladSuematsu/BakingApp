@@ -6,7 +6,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -49,8 +48,8 @@ public class RecipeStepFragment extends Fragment {
         Step onVisible();
     }
 
-    private static final String TAG = RecipeStepFragment.class.getSimpleName();
-    private static final String STATE_DATASOURCE = "state_playback_position";
+    private static final String LOG_TAG = RecipeStepFragment.class.getSimpleName();
+    private static final String STATE_DATASOURCE = "state_datasource";
     private static final String STATE_PLAYBACK_POSITION = "state_playback_position";
 
     @BindView(R.id.next) Button stepNext;
@@ -83,6 +82,8 @@ public class RecipeStepFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        Log.d(LOG_TAG, hashCode() + ": onCreateView: " + (savedInstanceState != null ? savedInstanceState.toString() : "NULL"));
+
         View view = inflater.inflate(R.layout.fragment_recipe_step, container, false);
         ButterKnife.bind(this, view);
         return view;
@@ -116,6 +117,7 @@ public class RecipeStepFragment extends Fragment {
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        Log.d(LOG_TAG, hashCode() + ": onActivityCreated");
         super.onActivityCreated(savedInstanceState);
 
         if (savedInstanceState != null) {
@@ -126,11 +128,11 @@ public class RecipeStepFragment extends Fragment {
 
     @Override
     public void onStart() {
+        Log.d(LOG_TAG, hashCode() + ": onStart");
         super.onStart();
 
         if (Util.SDK_INT > 23
                 && playWhenReady
-//                && getUserVisibleHint()
                 ) {
             bindDatasource();
         }
@@ -138,11 +140,11 @@ public class RecipeStepFragment extends Fragment {
 
     @Override
     public void onResume() {
+        Log.d(LOG_TAG, hashCode() + ": onResume");
         super.onResume();
 
         if (Util.SDK_INT <= 23
                 && playWhenReady
-//                && getUserVisibleHint()
         ) {
             bindDatasource();
         }
@@ -150,6 +152,7 @@ public class RecipeStepFragment extends Fragment {
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
+        Log.d(LOG_TAG, hashCode() + ": onSavedInstanceState");
         super.onSaveInstanceState(outState);
         outState.putParcelable(STATE_DATASOURCE, datasource);
         outState.putLong(STATE_PLAYBACK_POSITION, playbackPosition);
@@ -157,19 +160,21 @@ public class RecipeStepFragment extends Fragment {
 
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
+        Log.d(LOG_TAG, hashCode() + ": setUserVisibleHint: " + isVisibleToUser);
         super.setUserVisibleHint(isVisibleToUser);
 
         playWhenReady = isVisibleToUser;
         boolean isResumed = isResumed();
-        if (playWhenReady && isResumed) {
+        if (playWhenReady) {
             bindDatasource();
-        } else if (!playWhenReady && isResumed) {
+        } else if (isResumed) {
             releasePlayer(false);
         }
     }
 
     @Override
     public void onPause() {
+        Log.d(LOG_TAG, hashCode() + ": onPause");
         if (Util.SDK_INT <= 23) {
             releasePlayer(true);
         }
@@ -178,6 +183,7 @@ public class RecipeStepFragment extends Fragment {
 
     @Override
     public void onStop() {
+        Log.d(LOG_TAG, hashCode() + ": onStop");
         if (Util.SDK_INT > 23) {
             releasePlayer(true);
         }
@@ -194,11 +200,10 @@ public class RecipeStepFragment extends Fragment {
             mediaPlayer.addListener(playerListener);
 
             if (playWhenReady && datasource != null) {
-                Log.d(TAG, "initializePlayer: autoPlaying media  STEP ID " + datasource.getId());
+                Log.d(LOG_TAG,  hashCode() + ": initializePlayer: autoPlaying media  STEP ID " + datasource.getId());
             }
             mediaPlayerView.setPlayer(mediaPlayer);
 
-//            mediaPlayer.setPlayWhenReady(playWhenReady);
             mediaPlayer.setPlayWhenReady(true);
 
             mediaPlayer.seekTo(currentWindow, playbackPosition);
@@ -233,7 +238,10 @@ public class RecipeStepFragment extends Fragment {
     private Player.EventListener playerListener = new Player.EventListener() {
 
         @Override
-        public void onTimelineChanged(Timeline timeline, Object manifest) {}
+        public void onTimelineChanged(Timeline timeline, Object manifest) {
+            playbackPosition = mediaPlayer.getCurrentPosition();
+            Log.d(LOG_TAG, hashCode() + ": Playback position: " + playbackPosition);
+        }
 
         @Override
         public void onTracksChanged(TrackGroupArray trackGroups, TrackSelectionArray trackSelections) {}
@@ -243,8 +251,6 @@ public class RecipeStepFragment extends Fragment {
 
         @Override
         public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-            PlaybackStateCompat.Builder builder = new PlaybackStateCompat.Builder();
-
             switch(playbackState) {
                 case Player.STATE_ENDED:
                     mediaPlayer.setPlayWhenReady(false);
@@ -289,7 +295,7 @@ public class RecipeStepFragment extends Fragment {
 
             if (this.datasource.getVideoUrl() != null) {
                 Uri mediaUri = Uri.parse(this.datasource.getVideoUrl());
-                Log.d(TAG, "Step media Uri: " + mediaUri.toString());
+                Log.d(LOG_TAG, hashCode() + ": Step media Uri: " + mediaUri.toString());
 
                 mediaSource = buildMediaSource(mediaUri);
                 initializePlayer();
