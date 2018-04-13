@@ -81,4 +81,16 @@ public class Step implements Parcelable {
         parcel.writeString(videoUrl);
         parcel.writeString(thumbnailUrl);
     }
+
+    @Override
+    public String toString() {
+        return "Step{" +
+                "id=" + id +
+                ", recipeId=" + recipeId +
+                ", shortDescription='" + shortDescription + '\'' +
+                ", description='" + description + '\'' +
+                ", videoUrl='" + videoUrl + '\'' +
+                ", thumbnailUrl='" + thumbnailUrl + '\'' +
+                '}';
+    }
 }
