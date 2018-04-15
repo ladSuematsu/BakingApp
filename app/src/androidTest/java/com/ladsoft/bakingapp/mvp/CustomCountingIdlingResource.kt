@@ -5,7 +5,7 @@ import java.util.concurrent.atomic.AtomicInteger
 
 
 class CustomCountingIdlingResource(val resourceName: String): IdlingResource {
-    private val counter = AtomicInteger(0)
+    internal val counter = AtomicInteger(0)
     private var resourceCallback: IdlingResource.ResourceCallback? = null
 
     override fun getName(): String = resourceName

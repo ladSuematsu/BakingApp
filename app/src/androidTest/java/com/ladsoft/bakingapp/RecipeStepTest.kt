@@ -1,6 +1,7 @@
 package com.ladsoft.bakingapp
 
 import android.content.Intent
+import android.os.SystemClock
 import android.support.test.InstrumentationRegistry
 import android.support.test.espresso.Espresso
 import android.support.test.espresso.IdlingRegistry
@@ -65,25 +66,70 @@ class RecipeStepTest {
     }
 
     @Test
-    fun stepStateTest() {
-        Espresso.onView(Matchers.allOf(
-                            ViewMatchers.withId(R.id.step_description),
-                            ViewMatchers.isDisplayed()))
-                .check(ViewAssertions.matches(
-                        ViewMatchers.withText(steps[stepIndex].description)))
+    fun stepClickTest() {
+        checkViewPagerPageContent(steps[stepIndex])
 
+        clickPrevious()
+
+        checkViewPagerPageContent(steps[stepIndex - 1])
+
+        clickNext()
+        clickNext()
+
+        checkViewPagerPageContent(steps[stepIndex + 1])
+
+    }
+
+    @Test
+    fun stepSwipeTest() {
+        checkViewPagerPageContent(steps[stepIndex])
+
+        previousPage()
+
+        checkViewPagerPageContent(steps[stepIndex - 1])
+
+        nextPage()
+        nextPage()
+
+
+        checkViewPagerPageContent(steps[stepIndex + 1])
+    }
+
+    private fun previousPage() {
+        Espresso.onView(ViewMatchers.withId(R.id.step_pager))
+                .perform(ViewActions.swipeRight())
+
+        SystemClock.sleep(1000)
+    }
+
+    private fun nextPage() {
+        Espresso.onView(ViewMatchers.withId(R.id.step_pager))
+                .perform(ViewActions.swipeLeft())
+
+        SystemClock.sleep(1000)
+    }
+
+
+    private fun clickPrevious() {
         Espresso.onView(Matchers.allOf(
-                            ViewMatchers.withId(R.id.previous),
-                            ViewMatchers.isDisplayed()))
+                ViewMatchers.withId(R.id.previous),
+                ViewMatchers.isDisplayed()))
                 .perform(ViewActions.click())
+    }
 
+    private fun clickNext() {
         Espresso.onView(Matchers.allOf(
-                                ViewMatchers.withId(R.id.step_description),
-                                ViewMatchers.isDisplayed()))
-                .check(ViewAssertions.matches(Matchers.allOf(
-                        Matchers.not(ViewMatchers.withText(steps[stepIndex].description)),
-                        ViewMatchers.withText(steps[stepIndex - 1].description)
-                )))
+                ViewMatchers.withId(R.id.next),
+                ViewMatchers.isDisplayed()))
+                .perform(ViewActions.click())
+    }
+
+    private fun checkViewPagerPageContent(step: Step) {
+        Espresso.onView(Matchers.allOf(
+                ViewMatchers.withId(R.id.step_description),
+                ViewMatchers.isCompletelyDisplayed()))
+                .check(ViewAssertions.matches(
+                        ViewMatchers.withText(step.description)))
     }
 
     @After

@@ -277,9 +277,9 @@ public class RecipeStepFragment extends Fragment {
     }
 
     private void bindDatasource() {
-        if (datasource == null) {
+//        if (datasource == null) {
             datasource = listener.onVisible();
-        }
+//        }
 
         if (!isViewCreated) { return; }
 
