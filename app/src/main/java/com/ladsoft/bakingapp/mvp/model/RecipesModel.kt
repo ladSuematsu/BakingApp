@@ -11,20 +11,18 @@ import com.ladsoft.bakingapp.mvp.RecipesMvp
 import javax.inject.Inject
 
 
-class RecipesModel: RecipesMvp.Model {
+class RecipesModel constructor(val recipesRepository: RecipeRepository,
+                                val cacheRecipesRepository: DatabaseRecipeRepository,
+                                val cacheIngredientRepository: DatabaseIngredientRepository,
+                                val cacheStepRepository: DatabaseStepRepository): RecipesMvp.Model {
     val LOG_TAG = RecipesModel::class.java.simpleName
     var recipesModelListener: RecipesMvp.Model.Callback? = null
     val handler = Handler()
     val taskHandler = TaskHandler()
-    @Inject lateinit var recipesRepository: RecipeRepository
-    @Inject lateinit var cacheRecipesRepository: DatabaseRecipeRepository
-    @Inject lateinit var cacheIngredientRepository: DatabaseIngredientRepository
-    @Inject lateinit var cacheStepRepository: DatabaseStepRepository
 
     init {
         taskHandler.start()
         taskHandler.prepareWorkerHandler()
-        BakingAppApplication.appComponent.inject(this)
     }
 
     override fun setListener(listener: RecipesMvp.Model.Callback) {

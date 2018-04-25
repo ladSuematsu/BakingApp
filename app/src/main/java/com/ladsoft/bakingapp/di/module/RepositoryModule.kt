@@ -1,4 +1,4 @@
-package com.ladsoft.bakingapp.di.component
+package com.ladsoft.bakingapp.di.module
 
 import com.ladsoft.bakingapp.data.database.AppDatabase
 import com.ladsoft.bakingapp.data.database.repository.DatabaseIngredientRepository

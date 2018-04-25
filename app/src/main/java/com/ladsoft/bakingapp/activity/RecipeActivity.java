@@ -46,6 +46,7 @@ public class RecipeActivity extends AppCompatActivity implements RecipeMvp.View,
     public static final String EXTRA_RECIPE_ID = "extra_recipe_id";
 
     @Inject SessionManager sessionManager;
+    @Inject RecipeMvp.Model model;
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.content) FrameLayout content;
     @BindView (R.id.detail) @Nullable ViewPager detail;
@@ -69,7 +70,7 @@ public class RecipeActivity extends AppCompatActivity implements RecipeMvp.View,
         setupViews();
         setupFragments(savedInstanceState != null);
 
-        presenter = new RecipePresenter(new RecipeModel());
+        presenter = new RecipePresenter(model);
         stepPresenter = new StepPresenter();
 
         RecipeState state;

@@ -6,17 +6,17 @@ import android.arch.persistence.room.ForeignKey
 import android.arch.persistence.room.Index
 
 @Entity(tableName = IngredientRecord.TABLE_NAME,
-    primaryKeys = arrayOf(IngredientRecord.ID_COLUMN_NAME, IngredientRecord.RECIPE_ID_COLUMN_NAME),
-    foreignKeys = arrayOf(
+    primaryKeys = [IngredientRecord.ID_COLUMN_NAME, IngredientRecord.RECIPE_ID_COLUMN_NAME],
+    foreignKeys =[
             ForeignKey(entity = RecipeRecord::class,
-                parentColumns = arrayOf(RecipeRecord.ID_COLUMN_NAME),
-                childColumns = arrayOf(IngredientRecord.RECIPE_ID_COLUMN_NAME),
+                parentColumns = [RecipeRecord.ID_COLUMN_NAME],
+                childColumns = [IngredientRecord.RECIPE_ID_COLUMN_NAME],
                 onDelete = ForeignKey.CASCADE
             )
-        ),
-    indices = arrayOf(
-            Index(value = *arrayOf(IngredientRecord.RECIPE_ID_COLUMN_NAME, IngredientRecord.ID_COLUMN_NAME), unique = true)
-        )
+        ],
+    indices = [
+            Index(value = [IngredientRecord.RECIPE_ID_COLUMN_NAME, IngredientRecord.ID_COLUMN_NAME], unique = true)
+        ]
 )
 data class IngredientRecord(
         @ColumnInfo(name = ID_COLUMN_NAME) val id: Long,
