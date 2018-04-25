@@ -25,6 +25,8 @@ import butterknife.ButterKnife;
 
 
 public class RecipeStepActivity extends AppCompatActivity implements StepsMvp.View, RecipeStepFragment.Callback {
+    private static final String LOG_TAG = RecipeStepActivity.class.getSimpleName();
+
     public static final String EXTRA_STEPS = "extra_steps";
     public static final String EXTRA_STEP_INDEX = "extra_step_index";
 
@@ -36,6 +38,8 @@ public class RecipeStepActivity extends AppCompatActivity implements StepsMvp.Vi
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        Log.d(LOG_TAG, "onCreate: " + (savedInstanceState != null ? savedInstanceState.toString() : "NULL"));
+
         activityCreation = true;
 
         super.onCreate(savedInstanceState);
@@ -50,7 +54,7 @@ public class RecipeStepActivity extends AppCompatActivity implements StepsMvp.Vi
 
     @Override
     protected void onStart() {
-        super.onStart();
+        Log.d(LOG_TAG, "onStart");
 
         presenter.attachView(this);
         if (activityCreation) {
@@ -62,10 +66,14 @@ public class RecipeStepActivity extends AppCompatActivity implements StepsMvp.Vi
 
             activityCreation = false;
         }
+
+        super.onStart();
     }
 
     @Override
     protected void onStop() {
+        Log.d(LOG_TAG, "onStop");
+
         presenter.detachView();
         super.onStop();
     }
@@ -80,7 +88,7 @@ public class RecipeStepActivity extends AppCompatActivity implements StepsMvp.Vi
     }
 
     private void setupFragments() {
-        slideshowAdapter = new StepSlideshowAdapter(getSupportFragmentManager());
+        slideshowAdapter = new StepSlideshowAdapter(getSupportFragmentManager(), this);
         content.setAdapter(slideshowAdapter);
 
         content.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
@@ -108,8 +116,13 @@ public class RecipeStepActivity extends AppCompatActivity implements StepsMvp.Vi
     }
 
     @Override
+    public Step onVisible() {
+        return presenter.stepData();
+    }
+
+    @Override
     public void showStep(int position) {
-        Log.d("RECIPE_STEP", "Navigating to index " + position);
+        Log.d(LOG_TAG, "Navigating to index " + position);
         content.setCurrentItem(position, true);
     }
 }

@@ -59,4 +59,8 @@ class StepPresenter : Presenter<StepsMvp.View>() {
         }
     }
 
+    fun stepData(): Step {
+        return steps[stepIndex]
+    }
+
 }

@@ -1,36 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    >
-    <TextView android:id="@+id/ingredient"
-        android:text="Ingredient"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+    android:paddingStart="@dimen/list_item_content_horizontal_margin"
+    android:paddingTop="@dimen/list_item_content_vertical_margin"
+    android:paddingEnd="@dimen/list_item_content_vertical_margin"
+    android:paddingBottom="@dimen/list_item_content_horizontal_margin">
+
+    <TextView
+        android:id="@+id/ingredient"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="0dp"
+        android:layout_marginTop="0dp"
+        android:text="Ingredient"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="0dp" />
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView android:id="@+id/quantity"
+    <TextView
+        android:id="@+id/quantity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="4dp"
         android:text="00"
         android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ingredient" />
+
+    <TextView
+        android:id="@+id/measure"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        app:layout_constraintTop_toBottomOf="@+id/ingredient"
-        android:layout_marginLeft="8dp"
-        app:layout_constraintLeft_toLeftOf="parent" />
-    <TextView android:id="@+id/measure"
+        android:layout_marginLeft="4dp"
+        android:layout_marginTop="4dp"
         android:text="measure"
         android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+        app:layout_constraintBottom_toBottomOf="@+id/quantity"
+        app:layout_constraintLeft_toRightOf="@+id/quantity"
+        app:layout_constraintTop_toBottomOf="@+id/ingredient"
+        app:layout_constraintVertical_bias="1.0" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintLeft_toRightOf="@+id/quantity"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintTop_toBottomOf="@+id/ingredient" />
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="20dp" />
 </android.support.constraint.ConstraintLayout>
