@@ -9,8 +9,8 @@ class RecipeTranslator : Translator<RecipePayload, Recipe> {
         val stepTranslator = StepTranslator(source.id)
 
         val ingredients = source.ingredients
-                .sortedWith(compareBy{it.description.toUpperCase()})
-                .mapIndexed { index, it ->
+                ?.sortedWith(compareBy{it.description?.toUpperCase()})
+                ?.mapIndexed { index, it ->
                     it.id = index.toLong()
                     ingredientTranslator.translate(it)
                 }
