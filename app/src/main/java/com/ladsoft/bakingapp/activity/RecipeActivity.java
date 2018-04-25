@@ -24,7 +24,6 @@ import com.ladsoft.bakingapp.fragment.RecipeStepFragment;
 import com.ladsoft.bakingapp.manager.SessionManager;
 import com.ladsoft.bakingapp.mvp.RecipeMvp;
 import com.ladsoft.bakingapp.mvp.StepsMvp;
-import com.ladsoft.bakingapp.mvp.model.RecipeModel;
 import com.ladsoft.bakingapp.mvp.presenter.RecipePresenter;
 import com.ladsoft.bakingapp.mvp.presenter.StepPresenter;
 import com.ladsoft.bakingapp.mvp.presenter.state.RecipeState;
@@ -223,7 +222,7 @@ public class RecipeActivity extends AppCompatActivity implements RecipeMvp.View,
     }
 
     @Override
-    public void onStepsLoaded(@NotNull List<? extends Step> steps) {
+    public void onStepsLoaded(@NotNull List<Step> steps) {
         if (detail != null) {
             slideshowAdapter.setDataSource(steps);
         }

@@ -7,7 +7,7 @@ import com.ladsoft.bakingapp.entity.Step
 class StepTranslator(private val recipeId: Long) : Translator<StepPayload, Step> {
 
     override fun translate(source: StepPayload): Step {
-        return Step(source.id, recipeId, source.shortDescription, source.description,
-                source.videoUrl, source.thumbnailUrl)
+        return Step(source.id, recipeId, source.shortDescription ?: "", source.description ?: "",
+                source.videoUrl ?: "", source.thumbnailUrl ?: "")
     }
 }

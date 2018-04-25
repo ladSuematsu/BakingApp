@@ -104,7 +104,7 @@ public class RecipeStepActivity extends AppCompatActivity implements StepsMvp.Vi
     }
 
     @Override
-    public void onStepsLoaded(@NotNull List<? extends Step> steps) {
+    public void onStepsLoaded(@NotNull List<Step> steps) {
         slideshowAdapter.setDataSource(steps);
     }
 

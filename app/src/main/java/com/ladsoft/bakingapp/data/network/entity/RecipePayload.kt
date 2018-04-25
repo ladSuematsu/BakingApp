@@ -27,5 +27,5 @@ data class RecipePayload (
 
     @Expose
     @SerializedName("steps")
-    val steps: List<StepPayload>
+    val steps: List<StepPayload>?
 )

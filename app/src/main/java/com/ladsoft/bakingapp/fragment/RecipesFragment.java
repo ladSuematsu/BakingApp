@@ -4,9 +4,7 @@ package com.ladsoft.bakingapp.fragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.annotation.VisibleForTesting;
 import android.support.design.widget.Snackbar;
-import android.support.test.espresso.idling.CountingIdlingResource;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -20,13 +18,11 @@ import com.ladsoft.bakingapp.adapter.RecipesAdapter;
 import com.ladsoft.bakingapp.application.BakingAppApplication;
 import com.ladsoft.bakingapp.entity.Recipe;
 import com.ladsoft.bakingapp.mvp.RecipesMvp;
-import com.ladsoft.bakingapp.mvp.model.RecipesModel;
 import com.ladsoft.bakingapp.mvp.presenter.RecipesPresenter;
 import com.ladsoft.bakingapp.util.UiUtils;
 import com.ladsoft.bakingapp.view.layoutmanager.decoration.SimplePaddingDecoration;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.TestOnly;
 
 import java.util.List;
 
@@ -34,7 +30,6 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import dagger.Module;
 
 public class RecipesFragment extends Fragment implements RecipesMvp.View, SwipeRefreshLayout.OnRefreshListener {
     public static final String TAG = RecipesFragment.class.getSimpleName();
@@ -119,8 +114,8 @@ public class RecipesFragment extends Fragment implements RecipesMvp.View, SwipeR
     }
 
     @Override
-    public void onRecipesLoaded(@NotNull List<? extends Recipe> recipes) {
-        adapter.setDatasource((List<Recipe>) recipes);
+    public void onRecipesLoaded(@NotNull List<Recipe> recipes) {
+        adapter.setDatasource(recipes);
     }
 
     @Override

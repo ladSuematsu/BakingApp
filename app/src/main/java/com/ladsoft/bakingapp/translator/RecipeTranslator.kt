@@ -15,8 +15,9 @@ class RecipeTranslator : Translator<RecipePayload, Recipe> {
                     ingredientTranslator.translate(it)
                 }
 
-        val steps = source.steps.map { stepTranslator.translate(it) }
+        val steps = source.steps?.map { stepTranslator.translate(it) }
 
-        return Recipe(source.id, source.name, source.servings, source.imageUrl, ingredients, steps)
+        return Recipe(source.id, source.name ?: "", source.servings, source.imageUrl ?: "",
+                    ingredients ?: emptyList(), steps ?: emptyList())
     }
 }
