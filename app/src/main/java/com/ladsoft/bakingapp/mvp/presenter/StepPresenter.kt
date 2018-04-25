@@ -4,13 +4,13 @@ import com.ladsoft.bakingapp.entity.Step
 import com.ladsoft.bakingapp.mvp.StepsMvp
 
 
-class StepPresenter : Presenter<StepsMvp.View>() {
+open class StepPresenter : Presenter<StepsMvp.View>() {
 
     private val steps : MutableList<Step> = mutableListOf()
     private var stepIndex = 0
     private var autoLoad = true
 
-    fun setData(initialIndex: Int, steps: List<Step>?, autoLoad: Boolean = true) {
+    open fun setData(initialIndex: Int, steps: List<Step>?, autoLoad: Boolean = true) {
         if (steps != null) {
             when {
                 initialIndex < steps.size -> stepIndex = initialIndex
@@ -26,7 +26,7 @@ class StepPresenter : Presenter<StepsMvp.View>() {
         }
     }
 
-    fun showCurrentStep() {
+    open fun showCurrentStep() {
         steps.apply {
             if (size > 0) {
                 if (!autoLoad) {
@@ -39,11 +39,11 @@ class StepPresenter : Presenter<StepsMvp.View>() {
         }
     }
 
-    fun setCurrentStepIndex(index: Int) {
+    open fun setCurrentStepIndex(index: Int) {
         stepIndex = index
     }
 
-    fun nextStep() {
+    open fun nextStep() {
         if (stepIndex < this.steps.size) {
             stepIndex = if (stepIndex + 1 == this.steps.size) stepIndex else stepIndex + 1
 
@@ -51,7 +51,7 @@ class StepPresenter : Presenter<StepsMvp.View>() {
         }
     }
 
-    fun previousStep() {
+    open fun previousStep() {
         if (stepIndex > 0) {
             stepIndex = if (stepIndex == 0) stepIndex else stepIndex - 1
 
@@ -59,7 +59,7 @@ class StepPresenter : Presenter<StepsMvp.View>() {
         }
     }
 
-    fun stepData(): Step {
+    open fun stepData(): Step {
         return steps[stepIndex]
     }
 

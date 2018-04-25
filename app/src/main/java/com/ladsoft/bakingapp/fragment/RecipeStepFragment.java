@@ -277,9 +277,9 @@ public class RecipeStepFragment extends Fragment {
     }
 
     private void bindDatasource() {
-        if (datasource == null) {
+//        if (datasource == null) {
             datasource = listener.onVisible();
-        }
+//        }
 
         if (!isViewCreated) { return; }
 
@@ -291,6 +291,8 @@ public class RecipeStepFragment extends Fragment {
                 mediaPlayer.clearVideoSurface();
             }
         } else {
+            Log.d(LOG_TAG, hashCode() + ": datasource: " + datasource.toString());
+
             stepDescription.setText(this.datasource.getDescription());
 
             if (this.datasource.getVideoUrl() != null) {

@@ -11,6 +11,7 @@ import android.view.View;
 
 import com.ladsoft.bakingapp.R;
 import com.ladsoft.bakingapp.adapter.StepSlideshowAdapter;
+import com.ladsoft.bakingapp.application.BakingAppApplication;
 import com.ladsoft.bakingapp.entity.Step;
 import com.ladsoft.bakingapp.fragment.RecipeStepFragment;
 import com.ladsoft.bakingapp.mvp.StepsMvp;
@@ -19,6 +20,8 @@ import com.ladsoft.bakingapp.mvp.presenter.StepPresenter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -31,10 +34,10 @@ public class RecipeStepActivity extends AppCompatActivity implements StepsMvp.Vi
     public static final String EXTRA_STEP_INDEX = "extra_step_index";
 
     @BindView(R.id.toolbar) Toolbar toolbar;
-    @BindView(R.id.content) ViewPager content;
+    @BindView(R.id.step_pager) ViewPager content;
     private StepSlideshowAdapter slideshowAdapter;
     private boolean activityCreation;
-    private StepPresenter presenter;
+    @Inject StepPresenter presenter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -46,7 +49,7 @@ public class RecipeStepActivity extends AppCompatActivity implements StepsMvp.Vi
         setContentView(R.layout.activity_step);
         ButterKnife.bind(this);
 
-        presenter = new StepPresenter();
+        BakingAppApplication.appComponent.inject(this);
 
         setupViews();
         setupFragments();

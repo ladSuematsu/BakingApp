@@ -17,19 +17,23 @@
 package com.ladsoft.bakingapp.mvp
 
 import android.support.test.espresso.IdlingResource
+import android.util.Log
 
 /**
  * Contains a static reference to [IdlingResource], only available in the 'mock' build type.
  */
 object EspressoIdlingResource {
+    val LOG_TAG = EspressoIdlingResource::class.simpleName
     val RESOURCE = "GLOBAL"
     val countingIdlingResource = CustomCountingIdlingResource(RESOURCE)
 
     fun increment() {
         countingIdlingResource.increment()
+        Log.d(LOG_TAG, "Counting idling resource increment: " + countingIdlingResource.counter)
     }
 
     fun decrement() {
         countingIdlingResource.decrement()
+        Log.d(LOG_TAG, "Counting idling resource decrement: " + countingIdlingResource.counter)
     }
 }
