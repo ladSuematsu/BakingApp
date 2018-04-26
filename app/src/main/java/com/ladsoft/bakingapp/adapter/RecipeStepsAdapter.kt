@@ -10,7 +10,6 @@ import butterknife.BindView
 import butterknife.ButterKnife
 import com.ladsoft.bakingapp.R
 import com.ladsoft.bakingapp.entity.Step
-import java.util.*
 
 class RecipeStepsAdapter(private val layoutInflater: LayoutInflater) : RecyclerView.Adapter<RecipeStepsAdapter.StepViewHolder>() {
     private var datasource: MutableList<Step> = ArrayList()
@@ -28,9 +27,8 @@ class RecipeStepsAdapter(private val layoutInflater: LayoutInflater) : RecyclerV
         return datasource.size
     }
 
-    fun setDatasource(datasource: MutableList<Step>) {
-        this.datasource.clear()
-        this.datasource = datasource
+    fun setDatasource(datasource: MutableList<Step>?) {
+        this.datasource = datasource ?: ArrayList()
         notifyDataSetChanged()
     }
 

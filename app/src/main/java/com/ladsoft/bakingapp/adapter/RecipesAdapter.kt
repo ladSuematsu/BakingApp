@@ -29,12 +29,7 @@ class RecipesAdapter(private val layoutInflater: LayoutInflater) : RecyclerView.
     }
 
     fun setDatasource(datasource: MutableList<Recipe>?) {
-        this.datasource.clear()
-
-        if (datasource != null) {
-            this.datasource = datasource
-        }
-
+        this.datasource = datasource ?: ArrayList()
         notifyDataSetChanged()
     }
 

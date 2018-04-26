@@ -152,7 +152,7 @@ public class RecipeActivity extends AppCompatActivity implements RecipeMvp.View,
         FragmentManager fragmentManager = getSupportFragmentManager();
 
         if ((recipeFragment = (RecipeFragment) fragmentManager.findFragmentById(content.getId())) == null) {
-            recipeFragment = RecipeFragment.newInstance();
+            recipeFragment = RecipeFragment.Companion.newInstance();
             fragmentManager.beginTransaction()
                     .replace(content.getId(), recipeFragment)
                     .commitNow();
