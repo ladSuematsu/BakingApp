@@ -2,13 +2,11 @@ package com.ladsoft.bakingapp.mvp.model
 
 import android.os.Handler
 import android.util.Log
-import com.ladsoft.bakingapp.application.BakingAppApplication
 import com.ladsoft.bakingapp.data.database.repository.DatabaseIngredientRepository
 import com.ladsoft.bakingapp.data.database.repository.DatabaseRecipeRepository
 import com.ladsoft.bakingapp.data.database.repository.DatabaseStepRepository
 import com.ladsoft.bakingapp.data.repository.RecipeRepository
 import com.ladsoft.bakingapp.mvp.RecipesMvp
-import javax.inject.Inject
 
 
 class RecipesModel constructor(val recipesRepository: RecipeRepository,
@@ -58,7 +56,7 @@ class RecipesModel constructor(val recipesRepository: RecipeRepository,
             } finally {
                 try {
                     // Always load from local database
-                    val recipes = cacheRecipesRepository.loadRecipes()
+                    val recipes = cacheRecipesRepository.loadRecipes().toMutableList()
                     handler.post({
                         recipesModelListener?.onDataLoaded(recipes)
                     })
