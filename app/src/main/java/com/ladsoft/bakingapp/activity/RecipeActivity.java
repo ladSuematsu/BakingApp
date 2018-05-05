@@ -189,8 +189,8 @@ public class RecipeActivity extends AppCompatActivity implements RecipeMvp.View,
                 stepPresenter.showCurrentStep();
             } else {
                 Intent intent = new Intent(RecipeActivity.this, RecipeStepActivity.class);
-                intent.putParcelableArrayListExtra(RecipeStepActivity.EXTRA_STEPS, (ArrayList<Step>) steps);
-                intent.putExtra(RecipeStepActivity.EXTRA_STEP_INDEX, itemIndex);
+                intent.putParcelableArrayListExtra(RecipeStepActivity.Companion.getEXTRA_STEPS(), (ArrayList<Step>) steps);
+                intent.putExtra(RecipeStepActivity.Companion.getEXTRA_STEP_INDEX(), itemIndex);
                 startActivity(intent);
             }
         }

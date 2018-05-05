@@ -13,7 +13,14 @@ import android.widget.Button
 import android.widget.TextView
 import butterknife.BindView
 import butterknife.ButterKnife
-import com.google.android.exoplayer2.*
+import com.google.android.exoplayer2.DefaultLoadControl
+import com.google.android.exoplayer2.DefaultRenderersFactory
+import com.google.android.exoplayer2.ExoPlaybackException
+import com.google.android.exoplayer2.ExoPlayerFactory
+import com.google.android.exoplayer2.PlaybackParameters
+import com.google.android.exoplayer2.Player
+import com.google.android.exoplayer2.SimpleExoPlayer
+import com.google.android.exoplayer2.Timeline
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory
 import com.google.android.exoplayer2.source.ExtractorMediaSource
 import com.google.android.exoplayer2.source.MediaSource
@@ -84,7 +91,7 @@ class RecipeStepFragment : Fragment() {
     interface Callback {
         fun onNextPress()
         fun onPreviousPress()
-        fun onVisible(): Step
+        fun onVisible(): Step?
     }
 
     override fun onAttach(context: Context?) {
