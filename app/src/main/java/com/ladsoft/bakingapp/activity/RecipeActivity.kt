@@ -159,7 +159,7 @@ class RecipeActivity : AppCompatActivity(), RecipeMvp.View, RecipeStepFragment.C
     private fun setupFragments(isRestore: Boolean) {
         val fragmentManager = supportFragmentManager
 
-        recipeFragment = fragmentManager.findFragmentById(content!!.id) as RecipeFragment
+        recipeFragment = fragmentManager.findFragmentById(content!!.id) as RecipeFragment?
         if (recipeFragment  == null) {
             recipeFragment = RecipeFragment.newInstance()
             fragmentManager.beginTransaction()
