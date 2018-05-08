@@ -18,7 +18,7 @@ class RecipesPresenter(val model: RecipesMvp.Model): Presenter<RecipesMvp.View>(
         super.detachView()
     }
 
-    override fun onDataLoaded(recipes: List<Recipe>) {
+    override fun onDataLoaded(recipes: MutableList<Recipe>) {
         view?.onRecipesLoaded(recipes)
         view?.showRefresh(false)
     }
@@ -28,7 +28,7 @@ class RecipesPresenter(val model: RecipesMvp.Model): Presenter<RecipesMvp.View>(
         view?.showRefresh(false)
     }
 
-    override fun onDataLoadError(recipes: List<Recipe>) {
+    override fun onDataLoadError(recipes: MutableList<Recipe>) {
         view?.onRecipeLoadError()
         view?.onRecipesLoaded(recipes)
         view?.showRefresh(false)

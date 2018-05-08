@@ -9,14 +9,15 @@ class RecipeTranslator : Translator<RecipePayload, Recipe> {
         val stepTranslator = StepTranslator(source.id)
 
         val ingredients = source.ingredients
-                .sortedWith(compareBy{it.description.toUpperCase()})
-                .mapIndexed { index, it ->
+                ?.sortedWith(compareBy{it.description?.toUpperCase()})
+                ?.mapIndexed { index, it ->
                     it.id = index.toLong()
                     ingredientTranslator.translate(it)
                 }
 
-        val steps = source.steps.map { stepTranslator.translate(it) }
+        val steps = source.steps?.map { stepTranslator.translate(it) }
 
-        return Recipe(source.id, source.name, source.servings, source.imageUrl, ingredients, steps)
+        return Recipe(source.id, source.name ?: "", source.servings, source.imageUrl ?: "",
+                    ingredients ?: emptyList(), steps ?: emptyList())
     }
 }
