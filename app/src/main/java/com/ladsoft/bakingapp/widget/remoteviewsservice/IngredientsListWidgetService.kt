@@ -17,6 +17,7 @@ import javax.inject.Inject
 
 class IngredientsListWidgetService : RemoteViewsService() {
 
+
     override fun onGetViewFactory(intent: Intent): RemoteViewsService.RemoteViewsFactory {
         return ListRemoteViewsFactory(this)
     }
@@ -39,7 +40,9 @@ class IngredientsListWidgetService : RemoteViewsService() {
         override fun onDataSetChanged() {
             val lastSelectedReceiptId = sessionManager!!.lastSelectedReceiptId.invoke()
 
-            recipe = recipeRepository?.loadRecipe(lastSelectedReceiptId) ?: null
+            recipe = recipeRepository?.loadRecipe(lastSelectedReceiptId)
+
+
             ingredients.clear()
             if (recipe != null) {
                 ingredients = repository
@@ -60,26 +63,22 @@ class IngredientsListWidgetService : RemoteViewsService() {
         }
 
         override fun getViewAt(position: Int): RemoteViews {
-            val views = RemoteViews(context.packageName, R.layout.widget_item_recipe_ingredient)
-
-            if (position == 0) {
-                views.setViewVisibility(R.id.quantity, View.GONE)
-                views.setViewVisibility(R.id.measure, View.GONE)
-
-                views.setTextViewText(R.id.ingredient, recipe!!.name)
-                views.setTextViewText(R.id.quantity, null)
-                views.setTextViewText(R.id.measure, null)
-            } else {
-                views.setViewVisibility(R.id.quantity, View.VISIBLE)
-                views.setViewVisibility(R.id.measure, View.VISIBLE)
-
-                val ingredient = ingredients[position - 1]
-                views.setTextViewText(R.id.ingredient, ingredient.description)
-                views.setTextViewText(R.id.quantity, ingredient.quantity.toString())
-                views.setTextViewText(R.id.measure, ingredient.measure)
+            return if (position == 0) {
+                RemoteViews(context.packageName, R.layout.widget_item_recipe_name).apply {
+                    setTextViewText(R.id.recipe_name, recipe?.name)
+                }
             }
+            else {
+                RemoteViews(context.packageName, R.layout.widget_item_recipe_ingredient).apply {
+                    setViewVisibility(R.id.quantity, View.VISIBLE)
+                    setViewVisibility(R.id.measure, View.VISIBLE)
 
-            return views
+                    val ingredient = ingredients[position - 1]
+                    setTextViewText(R.id.ingredient, ingredient.description)
+                    setTextViewText(R.id.quantity, ingredient.quantity.toString())
+                    setTextViewText(R.id.measure, ingredient.measure)
+                }
+            }
         }
 
         override fun getLoadingView(): RemoteViews? {
@@ -87,7 +86,7 @@ class IngredientsListWidgetService : RemoteViewsService() {
         }
 
         override fun getViewTypeCount(): Int {
-            return 1
+            return 2
         }
         override fun getItemId(position: Int): Long {
             return if (position == 0) recipe!!.id else ingredients[position - 1].id
@@ -96,6 +95,7 @@ class IngredientsListWidgetService : RemoteViewsService() {
         override fun hasStableIds(): Boolean {
             return false
         }
+
 
     }
 

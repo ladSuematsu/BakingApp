@@ -2,7 +2,7 @@
     android:id="@+id/widget_root_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#09C"
+    android:background="@color/backgroundWhiteSemiOpaque"
     android:padding="@dimen/widget_margin">
 
     <TextView
@@ -12,15 +12,16 @@
         android:layout_margin="8dp"
         android:layout_centerHorizontal="true"
         android:contentDescription="@string/appwidget_text"
-        android:textColor="#ffffff"
-        android:textSize="24sp"
-        android:textStyle="bold|italic" />
+        android:textAllCaps="true"
+        android:textStyle="bold" />
 
     <ListView
         android:id="@+id/appwidget_list"
         android:layout_below="@id/appwidget_text"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
+        android:dividerHeight="0dp"
+        android:divider="@null"
         />
 
 </RelativeLayout>

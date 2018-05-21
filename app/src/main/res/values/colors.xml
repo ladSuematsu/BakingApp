@@ -8,4 +8,6 @@
 
     <color name="textColorInverse">#FFFF</color>
     <color name="textColorTransparent">#00000000</color>
+
+    <color name="backgroundWhiteSemiOpaque">#c0ffffff</color>
 </resources>

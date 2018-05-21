@@ -45,7 +45,7 @@ class BakingAppAppWidgetProvider : AppWidgetProvider() {
         }
 
         private fun getListRemoteView(context: Context): RemoteViews {
-            val widgetText = context.getString(R.string.appwidget_test_text)
+            val widgetText = context.getString(R.string.app_name)
 
             // Construct the RemoteViews object
             val views = RemoteViews(context.packageName, R.layout.baking_app_app_widget)
