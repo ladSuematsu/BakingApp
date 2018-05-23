@@ -48,7 +48,7 @@ class RecipeStepFragment : Fragment() {
     @JvmField @BindView(R.id.media_player)
     var mediaPlayerView: SimpleExoPlayerView? = null
 
-    private var playbackPosition: Long = 0
+    private var playbackPosition: Long = 0L
     private var datasource: Step? = null
     private var currentWindow: Int = 0
     private var mediaSource: MediaSource? = null
@@ -61,8 +61,8 @@ class RecipeStepFragment : Fragment() {
 
     private val playerListener = object : Player.EventListener {
 
-        override fun onTimelineChanged(timeline: Timeline, manifest: Any) {
-            playbackPosition = mediaPlayer!!.currentPosition
+        override fun onTimelineChanged(timeline: Timeline?, manifest: Any?) {
+            playbackPosition = mediaPlayer?.currentPosition ?: 0L
             Log.d(LOG_TAG, hashCode().toString() + ": Playback position: " + playbackPosition)
         }
 
