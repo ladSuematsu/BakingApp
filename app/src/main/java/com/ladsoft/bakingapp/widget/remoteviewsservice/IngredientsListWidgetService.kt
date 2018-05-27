@@ -23,9 +23,9 @@ class IngredientsListWidgetService : RemoteViewsService() {
     }
 
     class ListRemoteViewsFactory(context: Context) : RemoteViewsService.RemoteViewsFactory {
-        @JvmField @Inject var sessionManager: SessionManager? = null
-        @JvmField @Inject var recipeRepository: DatabaseRecipeRepository? = null
-        @JvmField @Inject var repository: DatabaseIngredientRepository? = null
+        @Inject lateinit var sessionManager: SessionManager
+        @Inject lateinit var recipeRepository: DatabaseRecipeRepository
+        @Inject lateinit var repository: DatabaseIngredientRepository
 
         private val context = context.applicationContext
         private var ingredients: MutableList<Ingredient> = ArrayList()
@@ -46,8 +46,8 @@ class IngredientsListWidgetService : RemoteViewsService() {
             ingredients.clear()
             if (recipe != null) {
                 ingredients = repository
-                        ?.loadForRecipeId(lastSelectedReceiptId)
-                        ?.toMutableList() ?: ArrayList()
+                                .loadForRecipeId(lastSelectedReceiptId)
+                                .toMutableList() ?: ArrayList()
                 if (ingredients.size < 0) {
                     recipe = null
                 }
@@ -63,12 +63,14 @@ class IngredientsListWidgetService : RemoteViewsService() {
         }
 
         override fun getViewAt(position: Int): RemoteViews {
+
             return if (position == 0) {
                 RemoteViews(context.packageName, R.layout.widget_item_recipe_name).apply {
                     setTextViewText(R.id.recipe_name, recipe?.name)
+
+                    setOnClickFillInIntent(R.id.widget_recipe_list_root, Intent())
                 }
-            }
-            else {
+            } else {
                 RemoteViews(context.packageName, R.layout.widget_item_recipe_ingredient).apply {
                     setViewVisibility(R.id.quantity, View.VISIBLE)
                     setViewVisibility(R.id.measure, View.VISIBLE)
@@ -77,9 +79,12 @@ class IngredientsListWidgetService : RemoteViewsService() {
                     setTextViewText(R.id.ingredient, ingredient.description)
                     setTextViewText(R.id.quantity, ingredient.quantity.toString())
                     setTextViewText(R.id.measure, ingredient.measure)
+
+                    setOnClickFillInIntent(R.id.widget_recipe_list_root, Intent())
                 }
             }
         }
+
 
         override fun getLoadingView(): RemoteViews? {
             return null

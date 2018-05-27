@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/backgroundWhiteSemiOpaque"
+    android:descendantFocusability="beforeDescendants"
     android:padding="@dimen/widget_margin">
 
     <TextView
@@ -15,7 +16,7 @@
         android:textAllCaps="true"
         android:textStyle="bold" />
 
-    <ListView
+    <ListView android:duplicateParentState="true"
         android:id="@+id/appwidget_list"
         android:layout_below="@id/appwidget_text"
         android:layout_height="wrap_content"
