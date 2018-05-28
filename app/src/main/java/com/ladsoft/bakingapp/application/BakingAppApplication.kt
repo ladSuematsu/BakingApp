@@ -1,16 +1,32 @@
 package com.ladsoft.bakingapp.application
 
+import android.app.Activity
 import android.app.Application
 import android.content.Context
 import com.ladsoft.bakingapp.di.component.AppComponent
+import com.ladsoft.bakingapp.di.component.DaggerAppComponent
+import dagger.android.AndroidInjector
+import dagger.android.DispatchingAndroidInjector
+import dagger.android.HasActivityInjector
+import javax.inject.Inject
 
 
-class BakingAppApplication: Application() {
+class BakingAppApplication: Application(), HasActivityInjector {
+    @Inject lateinit var dispatchingActivityAndroidInjector: DispatchingAndroidInjector<Activity>
 
     override fun onCreate() {
         super.onCreate()
 
-        appComponent = AppComponent.Initializer.initialize(this)
+        appComponent = DaggerAppComponent
+                .builder()
+                .application(this)
+                .build()
+
+        appComponent.inject(this)
+    }
+
+    override fun activityInjector(): AndroidInjector<Activity> {
+        return dispatchingActivityAndroidInjector
     }
 
     companion object {

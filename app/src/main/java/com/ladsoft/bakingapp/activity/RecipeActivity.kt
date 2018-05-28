@@ -1,8 +1,10 @@
 package com.ladsoft.bakingapp.activity
 
+
 import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.Snackbar
+import android.support.v4.app.Fragment
 import android.support.v4.view.ViewPager
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
@@ -16,7 +18,6 @@ import butterknife.ButterKnife
 import com.ladsoft.bakingapp.R
 import com.ladsoft.bakingapp.adapter.RecipeStepsAdapter
 import com.ladsoft.bakingapp.adapter.StepSlideshowAdapter
-import com.ladsoft.bakingapp.application.BakingAppApplication
 import com.ladsoft.bakingapp.entity.Recipe
 import com.ladsoft.bakingapp.entity.Step
 import com.ladsoft.bakingapp.fragment.RecipeFragment
@@ -29,50 +30,51 @@ import com.ladsoft.bakingapp.mvp.presenter.StepPresenter
 import com.ladsoft.bakingapp.mvp.presenter.state.RecipeState
 import com.ladsoft.bakingapp.service.IngredientUpdateService
 import com.ladsoft.bakingapp.util.UiUtils
+import dagger.android.AndroidInjection
+import dagger.android.AndroidInjector
+import dagger.android.DispatchingAndroidInjector
+import dagger.android.support.HasSupportFragmentInjector
 import java.util.*
 import javax.inject.Inject
 
+class RecipeActivity : AppCompatActivity(), HasSupportFragmentInjector, RecipeMvp.View, RecipeStepFragment.Callback, StepsMvp.View {
+    @JvmField @Inject var dispatchingAndroidFragmentInjector: DispatchingAndroidInjector<Fragment>? = null
 
-class RecipeActivity : AppCompatActivity(), RecipeMvp.View, RecipeStepFragment.Callback, StepsMvp.View {
-
-    @JvmField @Inject
-    var sessionManager: SessionManager? = null
-    
-    @JvmField @Inject
-    var model: RecipeMvp.Model? = null
-    
+    @JvmField @Inject var presenter: RecipePresenter? = null
+    @JvmField @Inject var sessionManager: SessionManager? = null
     @JvmField @BindView(R.id.toolbar)
     var toolbar: Toolbar? = null
-    
+
     @JvmField @BindView(R.id.recipe_name)
     var recipeName: TextView? = null
-    
+
     @JvmField @BindView(R.id.servings)
     var servings: TextView? = null
-    
+
     @JvmField @BindView(R.id.ingredient_count)
     var ingredientCount: TextView? = null
-    
+
     @JvmField @BindView(R.id.step_count)
     var stepCount: TextView? = null
-    
+
     @JvmField @BindView(R.id.content)
     var content: FrameLayout? = null
-    
+
     @JvmField @BindView(R.id.detail)
     var detail: ViewPager? = null
-    
+
     @JvmField @BindString(R.string.recipe_error_generic)
     var genericErrorMessage: String? = null
-    
+
     private var slideshowAdapter: StepSlideshowAdapter? = null
 
     private var recipeFragment: RecipeFragment? = null
 
-    private var presenter: RecipePresenter? = null
     private val DATA_STATE = "data_state"
-
     private var stepPresenter: StepPresenter? = null
+
+    override fun supportFragmentInjector(): AndroidInjector<Fragment> = dispatchingAndroidFragmentInjector!!
+
     private val stepAdapterListener = object : RecipeStepsAdapter.Listener {
         override fun onItemClickListener(itemIndex: Int, steps: List<Step>?) {
             if (detail != null) {
@@ -90,16 +92,14 @@ class RecipeActivity : AppCompatActivity(), RecipeMvp.View, RecipeStepFragment.C
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_recipe)
         ButterKnife.bind(this)
 
-        setupComponent()
-
         setupViews()
         setupFragments(savedInstanceState != null)
 
-        presenter = RecipePresenter(model!!)
         stepPresenter = StepPresenter()
 
         val state: RecipeState
@@ -184,10 +184,6 @@ class RecipeActivity : AppCompatActivity(), RecipeMvp.View, RecipeStepFragment.C
                 }
             })
         }
-    }
-
-    fun setupComponent() {
-        BakingAppApplication.appComponent.inject(this)
     }
 
     override fun onNextPress() {
