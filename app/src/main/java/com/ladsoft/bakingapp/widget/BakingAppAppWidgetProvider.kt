@@ -46,7 +46,7 @@ class BakingAppAppWidgetProvider : AppWidgetProvider() {
                                      appWidgetId: Int, sessionManager: SessionManager) {
 
 
-            val views = getListRemoteView(context, sessionManager);
+            val views = getListRemoteView(context, sessionManager)
 
 
             // Instruct the widget manager to update the widget

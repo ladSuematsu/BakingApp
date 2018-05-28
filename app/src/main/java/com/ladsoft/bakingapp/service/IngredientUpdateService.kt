@@ -5,19 +5,17 @@ import android.appwidget.AppWidgetManager
 import android.content.ComponentName
 import android.content.Intent
 import com.ladsoft.bakingapp.R
-import com.ladsoft.bakingapp.application.BakingAppApplication
 import com.ladsoft.bakingapp.manager.SessionManager
 import com.ladsoft.bakingapp.widget.BakingAppAppWidgetProvider
+import dagger.android.AndroidInjection
 import javax.inject.Inject
 
 class IngredientUpdateService: IntentService("IngredientUpdateService") {
     @Inject lateinit var sessionManager: SessionManager
 
-    init {
-        BakingAppApplication.appComponent.inject(this)
-    }
-
     override fun onHandleIntent(intent: Intent?) {
+        AndroidInjection.inject(this)
+
         updateIngredientListWidget()
     }
 
