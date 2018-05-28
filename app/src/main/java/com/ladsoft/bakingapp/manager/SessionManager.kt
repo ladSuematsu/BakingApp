@@ -16,7 +16,7 @@ class SessionManager(val context : Context) {
     }
 
     var lastSelectedReceiptId = {
-        sharedPreferences.getLong(LAST_SELECTED_RECEIPT_ID, 0)
+        sharedPreferences.getLong(LAST_SELECTED_RECEIPT_ID, 0L)
     }
 
     fun setLastSelectedReceiptId(receiptId: Long) {
