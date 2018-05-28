@@ -42,6 +42,8 @@ class RecipeActivity : AppCompatActivity(), HasSupportFragmentInjector, RecipeMv
 
     @JvmField @Inject var presenter: RecipePresenter? = null
     @JvmField @Inject var sessionManager: SessionManager? = null
+    @JvmField @Inject var state: RecipeState? = null
+
     @JvmField @BindView(R.id.toolbar)
     var toolbar: Toolbar? = null
 
@@ -102,13 +104,13 @@ class RecipeActivity : AppCompatActivity(), HasSupportFragmentInjector, RecipeMv
 
         stepPresenter = StepPresenter()
 
-        val state: RecipeState
-
-        state = if (savedInstanceState == null) RecipeState(intent.extras)
-                else RecipeState(savedInstanceState.getSerializable(DATA_STATE))
+        state?.apply {
+            if (savedInstanceState == null) load(intent.extras)
+            else load(savedInstanceState.getSerializable(DATA_STATE))
+        }
 
         startService(Intent(this, IngredientUpdateService::class.java))
-        presenter?.setData(state)
+        presenter?.setData(state as RecipeMvp.StateContainer)
     }
 
     override fun onStart() {

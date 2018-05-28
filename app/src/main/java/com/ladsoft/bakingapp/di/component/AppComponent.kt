@@ -6,7 +6,6 @@ import com.ladsoft.bakingapp.di.module.ActivityBuilder
 import com.ladsoft.bakingapp.di.module.AppModule
 import com.ladsoft.bakingapp.di.module.ModelModule
 import com.ladsoft.bakingapp.di.module.RepositoryModule
-import com.ladsoft.bakingapp.mvp.presenter.state.RecipeState
 import com.ladsoft.bakingapp.service.IngredientUpdateService
 import com.ladsoft.bakingapp.widget.BakingAppAppWidgetProvider
 import com.ladsoft.bakingapp.widget.remoteviewsservice.IngredientsListWidgetService
@@ -34,7 +33,7 @@ interface AppComponent {
         fun build(): AppComponent
     }
 
-    fun inject(recipeState: RecipeState)
+//    fun inject(recipeState: RecipeState)
     fun inject(viewFactory: IngredientsListWidgetService.ListRemoteViewsFactory)
     fun inject(provider: BakingAppAppWidgetProvider)
     fun inject(service: IngredientUpdateService)
