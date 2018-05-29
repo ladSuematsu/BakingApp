@@ -15,6 +15,10 @@ public class IngredientPayload {
     @Expose @SerializedName("ingredient")
     private String description;
 
+    public void setId(long id) {
+        this.id = id;
+    }
+
     public long getId() {
         return id;
     }
