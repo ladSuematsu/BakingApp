@@ -10,11 +10,11 @@ import butterknife.BindView
 import butterknife.ButterKnife
 import com.ladsoft.bakingapp.R
 import com.ladsoft.bakingapp.adapter.StepSlideshowAdapter
-import com.ladsoft.bakingapp.application.BakingAppApplication
 import com.ladsoft.bakingapp.entity.Step
 import com.ladsoft.bakingapp.fragment.RecipeStepFragment
 import com.ladsoft.bakingapp.mvp.StepsMvp
 import com.ladsoft.bakingapp.mvp.presenter.StepPresenter
+import dagger.android.AndroidInjection
 import javax.inject.Inject
 
 
@@ -26,13 +26,13 @@ class RecipeStepActivity : AppCompatActivity(), StepsMvp.View, RecipeStepFragmen
     @JvmField @BindView(R.id.step_pager)
     var content: ViewPager? = null
 
-    @JvmField @Inject
-    var presenter: StepPresenter? = null
+    @JvmField @Inject var presenter: StepPresenter? = null
 
     private var slideshowAdapter: StepSlideshowAdapter? = null
     private var activityCreation: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        AndroidInjection.inject(this)
         Log.d(LOG_TAG, "onCreate: " + (savedInstanceState?.toString() ?: "NULL"))
 
         activityCreation = true
@@ -40,8 +40,6 @@ class RecipeStepActivity : AppCompatActivity(), StepsMvp.View, RecipeStepFragmen
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_step)
         ButterKnife.bind(this)
-
-        BakingAppApplication.appComponent.inject(this)
 
         setupViews()
         setupFragments()

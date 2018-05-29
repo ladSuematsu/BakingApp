@@ -4,10 +4,12 @@ import com.ladsoft.bakingapp.data.database.repository.DatabaseIngredientReposito
 import com.ladsoft.bakingapp.data.database.repository.DatabaseRecipeRepository
 import com.ladsoft.bakingapp.data.database.repository.DatabaseStepRepository
 import com.ladsoft.bakingapp.data.repository.RecipeRepository
+import com.ladsoft.bakingapp.manager.SessionManager
 import com.ladsoft.bakingapp.mvp.RecipeMvp
 import com.ladsoft.bakingapp.mvp.RecipesMvp
 import com.ladsoft.bakingapp.mvp.model.RecipeModel
 import com.ladsoft.bakingapp.mvp.model.RecipesModel
+import com.ladsoft.bakingapp.mvp.presenter.state.RecipeState
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
@@ -32,4 +34,7 @@ class ModelModule {
             RecipeMvp.Model = RecipeModel(cacheRecipesRepository,
                                         cacheIngredientRepository,
                                         cacheStepRepository)
+
+    @Provides
+    fun providesRecipeState(sessionManager: SessionManager): RecipeState = RecipeState(sessionManager)
 }

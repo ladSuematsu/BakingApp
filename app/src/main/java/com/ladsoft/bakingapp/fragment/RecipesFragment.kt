@@ -15,12 +15,12 @@ import butterknife.BindView
 import butterknife.ButterKnife
 import com.ladsoft.bakingapp.R
 import com.ladsoft.bakingapp.adapter.RecipesAdapter
-import com.ladsoft.bakingapp.application.BakingAppApplication
 import com.ladsoft.bakingapp.entity.Recipe
 import com.ladsoft.bakingapp.mvp.RecipesMvp
 import com.ladsoft.bakingapp.mvp.presenter.RecipesPresenter
 import com.ladsoft.bakingapp.util.UiUtils
 import com.ladsoft.bakingapp.view.layoutmanager.decoration.SimplePaddingDecoration
+import dagger.android.support.AndroidSupportInjection
 import javax.inject.Inject
 
 class RecipesFragment : Fragment(), RecipesMvp.View, SwipeRefreshLayout.OnRefreshListener {
@@ -29,16 +29,11 @@ class RecipesFragment : Fragment(), RecipesMvp.View, SwipeRefreshLayout.OnRefres
 
     @JvmField @BindView(R.id.refresh) var refresh: SwipeRefreshLayout? = null
 
-    @JvmField @Inject var model: RecipesMvp.Model? = null
+    @JvmField @Inject var presenter: RecipesPresenter? = null
 
     private lateinit var adapter: RecipesAdapter
     private var recipeAdapterListener: RecipesAdapter.Listener? = null
-    private var presenter: RecipesPresenter? = null
     private lateinit var genericErrorMessage: String
-
-    init {
-        BakingAppApplication.appComponent.inject(this)
-    }
 
     companion object {
         val TAG = RecipesFragment::class.java.simpleName
@@ -52,8 +47,11 @@ class RecipesFragment : Fragment(), RecipesMvp.View, SwipeRefreshLayout.OnRefres
         super.onAttach(context)
 
         genericErrorMessage = getString(R.string.recipes_error)
+    }
 
-        presenter = RecipesPresenter(model!!)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        AndroidSupportInjection.inject(this)
+        super.onCreate(savedInstanceState)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
