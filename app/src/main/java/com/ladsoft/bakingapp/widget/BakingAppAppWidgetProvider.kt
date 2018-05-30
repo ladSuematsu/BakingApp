@@ -73,7 +73,7 @@ class BakingAppAppWidgetProvider : AppWidgetProvider() {
         }
 
         private fun buildActivityStartPendingIntent(sessionManager: SessionManager, context: Context): PendingIntent? {
-            val lastSelectedRecipeId = sessionManager.lastSelectedReceiptId()
+            val lastSelectedRecipeId = sessionManager.getLastSelectedReceiptId()
             val activityIntent = if (lastSelectedRecipeId.equals(0L).not())
                 Intent(context, RecipeActivity::class.java)
                         .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
