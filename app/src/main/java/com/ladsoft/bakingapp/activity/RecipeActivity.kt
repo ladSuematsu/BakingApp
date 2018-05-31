@@ -121,7 +121,7 @@ class RecipeActivity : AppCompatActivity(), HasSupportFragmentInjector, RecipeMv
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        outState.putSerializable(DATA_STATE, presenter?.state?.getStateMap())
+        outState.putSerializable(DATA_STATE, presenter?.data?.stateMap)
         super.onSaveInstanceState(outState)
     }
 
