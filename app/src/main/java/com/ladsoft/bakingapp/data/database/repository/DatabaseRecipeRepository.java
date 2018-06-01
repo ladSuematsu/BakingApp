@@ -1,5 +1,6 @@
 package com.ladsoft.bakingapp.data.database.repository;
 
+import com.ladsoft.bakingapp.data.database.AppDatabase;
 import com.ladsoft.bakingapp.data.database.dao.RecipeDao;
 import com.ladsoft.bakingapp.data.database.entity.RecipeRecord;
 import com.ladsoft.bakingapp.data.database.translator.RecipeRecordTranslator;
@@ -16,8 +17,8 @@ public class DatabaseRecipeRepository {
     private final Translator<Recipe, RecipeRecord> recipeRecordTranslator;
     private final Translator<RecipeRecord, Recipe> recipeTranslator;
 
-    public DatabaseRecipeRepository(RecipeDao dao) {
-        this.dao = dao;
+    public DatabaseRecipeRepository(AppDatabase appDatabase) {
+        this.dao = appDatabase.recipeDao();
         this.recipeRecordTranslator = new RecipeRecordTranslator();
         this.recipeTranslator = new RecipeTranslator();
     }

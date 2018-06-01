@@ -25,7 +25,7 @@ public class IngredientsListWidgetService extends RemoteViewsService {
         return new ListRemoteViewsFactory(this);
     }
 
-    protected class ListRemoteViewsFactory implements RemoteViewsFactory {
+    public class ListRemoteViewsFactory implements RemoteViewsFactory {
         @Inject SessionManager sessionManager;
         @Inject DatabaseRecipeRepository recipeRepository;
         @Inject DatabaseIngredientRepository repository;

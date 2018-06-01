@@ -24,7 +24,7 @@ public class BakingAppApiModule {
     @VisibleForTesting
     IdlingResource idlingResource;
 
-    BakingAppApiModule() {
+    public BakingAppApiModule() {
         gson = new GsonBuilder()
                 .excludeFieldsWithoutExposeAnnotation()
                 .serializeNulls()
