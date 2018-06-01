@@ -35,7 +35,7 @@ public class IngredientsListWidgetService extends RemoteViewsService {
         private Recipe recipe = null;
 
         public ListRemoteViewsFactory(Context context) {
-            BakingAppApplication.appComponent.inject(this);
+            BakingAppApplication.getAppComponent().inject(this);
             this.context = context.getApplicationContext();
         }
 

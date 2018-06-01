@@ -21,7 +21,7 @@ public class BakingAppAppWidgetProvider extends AppWidgetProvider {
 
     public BakingAppAppWidgetProvider() {
         super();
-        BakingAppApplication.appComponent.inject(this);
+        BakingAppApplication.getAppComponent().inject(this);
     }
 
     public static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
