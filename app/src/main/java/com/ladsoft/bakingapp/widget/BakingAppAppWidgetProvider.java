@@ -58,7 +58,7 @@ public class BakingAppAppWidgetProvider extends AppWidgetProvider {
         Intent activityIntent = lastSelectedRecipeId != 0L
             ? new Intent(context, RecipeActivity.class)
                         .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK)
-                .putExtra(RecipeActivity.Companion.getEXTRA_RECIPE_ID(), lastSelectedRecipeId)
+                .putExtra(RecipeActivity.EXTRA_RECIPE_ID, lastSelectedRecipeId)
             : new Intent(context, MainActivity.class)
                         .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
 
