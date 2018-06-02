@@ -85,7 +85,7 @@ public class RecipeActivity extends AppCompatActivity
 
     private RecipeStepsAdapter.Listener stepAdapterListener = new RecipeStepsAdapter.Listener() {
         @Override
-        public void onItemClickListener(int itemIndex, @Nullable List<? extends Step> steps) {
+        public void onItemClickListener(int itemIndex, @Nullable List<Step> steps) {
             if (detail != null) {
                 detail.setVisibility(View.VISIBLE);
 
