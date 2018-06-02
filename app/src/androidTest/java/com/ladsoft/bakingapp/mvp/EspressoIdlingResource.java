@@ -14,26 +14,25 @@
  * limitations under the License.
  */
 
-package com.ladsoft.bakingapp.mvp
+package com.ladsoft.bakingapp.mvp;
 
-import android.support.test.espresso.IdlingResource
-import android.util.Log
+import android.util.Log;
 
 /**
  * Contains a static reference to [IdlingResource], only available in the 'mock' build type.
  */
-object EspressoIdlingResource {
-    val LOG_TAG = EspressoIdlingResource::class.simpleName
-    val RESOURCE = "GLOBAL"
-    val countingIdlingResource = CustomCountingIdlingResource(RESOURCE)
+public abstract class EspressoIdlingResource {
+    public static final String LOG_TAG = EspressoIdlingResource.class.getSimpleName();
+    public static final String RESOURCE = "GLOBAL";
+    public static final CustomCountingIdlingResource countingIdlingResource = new CustomCountingIdlingResource(RESOURCE);
 
-    fun increment() {
-        countingIdlingResource.increment()
-        Log.d(LOG_TAG, "Counting idling resource increment: " + countingIdlingResource.counter)
+    static public void increment() {
+        countingIdlingResource.increment();
+        Log.d(LOG_TAG, "Counting idling resource increment: " + countingIdlingResource.getCounter());
     }
 
-    fun decrement() {
-        countingIdlingResource.decrement()
-        Log.d(LOG_TAG, "Counting idling resource decrement: " + countingIdlingResource.counter)
+    static public void decrement() {
+        countingIdlingResource.decrement();
+        Log.d(LOG_TAG, "Counting idling resource decrement: " + countingIdlingResource.getCounter());
     }
 }
