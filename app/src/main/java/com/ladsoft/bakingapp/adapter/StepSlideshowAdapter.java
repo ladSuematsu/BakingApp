@@ -21,7 +21,7 @@ public class StepSlideshowAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public Fragment getItem(int position)  {
-        RecipeStepFragment fragment = RecipeStepFragment.Companion.newInstance();
+        RecipeStepFragment fragment = RecipeStepFragment.newInstance();
         fragment.setListener(listener);
 
         return fragment;

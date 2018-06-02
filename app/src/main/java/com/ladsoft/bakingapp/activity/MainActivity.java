@@ -46,9 +46,9 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
         if (savedInstanceState != null) {
             recipesFragment = (RecipesFragment) fragmentManager.findFragmentById(content.getId());
         } else {
-            recipesFragment = RecipesFragment.Companion.newInstance();
+            recipesFragment = RecipesFragment.newInstance();
             fragmentManager.beginTransaction()
-                    .replace(content.getId(), recipesFragment, RecipesFragment.Companion.getTAG())
+                    .replace(content.getId(), recipesFragment, RecipesFragment.TAG)
                     .commitNow();
         }
 

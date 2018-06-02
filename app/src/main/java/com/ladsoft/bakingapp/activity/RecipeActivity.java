@@ -155,7 +155,7 @@ public class RecipeActivity extends AppCompatActivity
 
         recipeFragment = (RecipeFragment) fragmentManager.findFragmentById(content.getId());
         if (recipeFragment  == null) {
-            recipeFragment = RecipeFragment.Companion.newInstance();
+            recipeFragment = RecipeFragment.newInstance();
             fragmentManager.beginTransaction()
                     .replace(content.getId(), recipeFragment)
                     .commitNow();
