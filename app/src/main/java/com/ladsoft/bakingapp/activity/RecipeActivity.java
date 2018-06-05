@@ -3,6 +3,7 @@ package com.ladsoft.bakingapp.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -31,8 +32,6 @@ import com.ladsoft.bakingapp.mvp.presenter.StepPresenter;
 import com.ladsoft.bakingapp.mvp.presenter.state.RecipeState;
 import com.ladsoft.bakingapp.service.IngredientUpdateService;
 import com.ladsoft.bakingapp.util.UiUtils;
-
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
