@@ -24,6 +24,11 @@ public class BakingAppAppWidgetProvider extends AppWidgetProvider {
         BakingAppApplication.getAppComponent().inject(this);
     }
 
+    @Override
+    public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
+        updateAppWidgets(context, sessionManager, appWidgetManager, appWidgetIds);
+    }
+
     public static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
                                        Integer appWidgetId, SessionManager sessionManager) {
 

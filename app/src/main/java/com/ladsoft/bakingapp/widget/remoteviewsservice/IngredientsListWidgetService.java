@@ -2,11 +2,11 @@ package com.ladsoft.bakingapp.widget.remoteviewsservice;
 
 import android.content.Context;
 import android.content.Intent;
-import android.view.View;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
 import com.ladsoft.bakingapp.R;
+import com.ladsoft.bakingapp.activity.MainActivity;
 import com.ladsoft.bakingapp.application.BakingAppApplication;
 import com.ladsoft.bakingapp.data.database.repository.DatabaseIngredientRepository;
 import com.ladsoft.bakingapp.data.database.repository.DatabaseRecipeRepository;
@@ -64,22 +64,26 @@ public class IngredientsListWidgetService extends RemoteViewsService {
 
         @Override
         public int getCount() {
-            return ingredients.size() + (recipe != null ? 1 : 0);
+            return recipe != null
+                    ? ingredients.size() + 1
+                    : 1;
         }
 
         @Override
         public RemoteViews getViewAt(int position) {
             RemoteViews remoteViews;
             if (position == 0) {
-                remoteViews = new RemoteViews(context.getPackageName(), R.layout.widget_item_recipe_name);
 
-                remoteViews.setTextViewText(R.id.recipe_name, recipe.getName());
-                remoteViews.setOnClickFillInIntent(R.id.widget_recipe_list_root, new Intent());
+                if (recipe == null) {
+                    remoteViews = new RemoteViews(context.getPackageName(), R.layout.widget_item_no_recipe_selected);
+                    remoteViews.setOnClickFillInIntent(R.id.widget_recipe_list_root, new Intent(this.context, MainActivity.class));
+                } else {
+                    remoteViews = new RemoteViews(context.getPackageName(), R.layout.widget_item_recipe_name);
+                    remoteViews.setTextViewText(R.id.recipe_name, recipe.getName());
+                    remoteViews.setOnClickFillInIntent(R.id.widget_recipe_list_root, new Intent());
+                }
             } else {
                 remoteViews = new RemoteViews(context.getPackageName(), R.layout.widget_item_recipe_ingredient);
-
-                remoteViews.setViewVisibility(R.id.quantity, View.VISIBLE);
-                remoteViews.setViewVisibility(R.id.measure, View.VISIBLE);
 
                 Ingredient ingredient = ingredients.get(position -1);
                 remoteViews.setTextViewText(R.id.ingredient, ingredient.getDescription());
@@ -104,7 +108,14 @@ public class IngredientsListWidgetService extends RemoteViewsService {
 
         @Override
         public long getItemId(int position) {
-            return position == 0 ? recipe.getId() : ingredients.get(position - 1).getId();
+            long itemId = 0;
+            if (recipe != null) {
+                itemId = position == 0
+                            ? recipe.getId()
+                            : ingredients.get(position - 1).getId();
+            }
+
+            return itemId;
         }
 
         @Override
