@@ -68,7 +68,7 @@ public class RecipeActivity extends AppCompatActivity
 
     @BindView(R.id.content) FrameLayout content;
 
-    @BindView(R.id.detail) ViewPager detail;
+    @Nullable @BindView(R.id.detail) ViewPager detail;
 
     @BindString(R.string.recipe_error_generic) String genericErrorMessage;
 
