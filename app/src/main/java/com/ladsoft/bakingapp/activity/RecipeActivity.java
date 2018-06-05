@@ -6,6 +6,8 @@ import android.os.Parcelable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.NavUtils;
+import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -145,9 +147,20 @@ public class RecipeActivity extends AppCompatActivity
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                onBackPressed();
+                Intent parentIntent = NavUtils.getParentActivityIntent(RecipeActivity.this);
+                if (parentIntent == null) {
+                    throw new IllegalStateException("No Parent Activity Intent");
+                } else if (NavUtils.shouldUpRecreateTask(RecipeActivity.this, parentIntent)) {
+                    TaskStackBuilder.create(RecipeActivity.this)
+                            .addNextIntentWithParentStack(parentIntent)
+                            .startActivities();
+                } else {
+                    NavUtils.navigateUpTo(RecipeActivity.this, parentIntent);
+                }
             }
         });
+
+//        setSupportActionBar(toolbar);
     }
 
     public void setupFragments(boolean isRestore) {

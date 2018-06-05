@@ -62,12 +62,9 @@ public class BakingAppAppWidgetProvider extends AppWidgetProvider {
         long lastSelectedRecipeId = sessionManager.getLastSelectedReceiptId();
         Intent activityIntent = lastSelectedRecipeId != 0L
             ? new Intent(context, RecipeActivity.class)
-                        .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK)
-                .putExtra(RecipeActivity.EXTRA_RECIPE_ID, lastSelectedRecipeId)
-            : new Intent(context, MainActivity.class)
-                        .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+            : new Intent(context, MainActivity.class);
 
-        return PendingIntent.getActivity(context, 0, activityIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+        return PendingIntent.getActivity(context, 0, activityIntent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
     public static void updateAppWidgets(Context context, SessionManager sessionManager, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
