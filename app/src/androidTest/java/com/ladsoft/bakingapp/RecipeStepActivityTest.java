@@ -1,6 +1,7 @@
 package com.ladsoft.bakingapp;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.support.test.espresso.Espresso;
 import android.support.test.espresso.IdlingRegistry;
 import android.support.test.espresso.action.ScrollToAction;
@@ -54,9 +55,12 @@ public class RecipeStepActivityTest {
                 .perform(RecyclerViewActions.scrollTo(ViewMatchers.hasDescendant(ViewMatchers.withText(TestValues.BROWNIES_STEP_TEXT))))
                 .perform(RecyclerViewActions.actionOnItemAtPosition(1, ViewActions.click()));
 
-        Intents.intended(IntentMatchers.hasComponent(RecipeStepActivity.class.getName()));
-        Intents.intended(IntentMatchers.hasExtraWithKey(RecipeStepActivity.EXTRA_STEPS));
-        Intents.intended(IntentMatchers.hasExtraWithKey(RecipeStepActivity.EXTRA_STEP_INDEX));
+        int screenOrientation = activityTestRule.getActivity().getResources().getConfiguration().orientation;
+        if (screenOrientation == Configuration.ORIENTATION_PORTRAIT) {
+            Intents.intended(IntentMatchers.hasComponent(RecipeStepActivity.class.getName()));
+            Intents.intended(IntentMatchers.hasExtraWithKey(RecipeStepActivity.EXTRA_STEPS));
+            Intents.intended(IntentMatchers.hasExtraWithKey(RecipeStepActivity.EXTRA_STEP_INDEX));
+        }
 
         BaseMatcher<String> stepDescriptionMatcher = new BaseMatcher<String>() {
             @Override
