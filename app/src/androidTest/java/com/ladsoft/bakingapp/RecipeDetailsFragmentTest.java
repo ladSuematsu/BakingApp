@@ -33,7 +33,7 @@ import org.junit.runner.RunWith;
 public class RecipeDetailsFragmentTest {
 
     @Rule
-    private ActivityTestRule<RecipeActivity> activityTestRule = new ActivityTestRule<RecipeActivity>(RecipeActivity.class) {
+    public final ActivityTestRule<RecipeActivity> activityTestRule = new ActivityTestRule<RecipeActivity>(RecipeActivity.class) {
         @Override
         public Intent getActivityIntent() {
             Context targetContext =
@@ -45,14 +45,14 @@ public class RecipeDetailsFragmentTest {
     };
 
     @Before
-    private void before() {
+    public void before() {
         Intents.init();
         IdlingRegistry.getInstance()
                 .register(EspressoIdlingResource.countingIdlingResource);
     }
 
     @Test
-    private void loadBrowniesRecipe() {
+    public void loadBrowniesRecipe() {
         Espresso.onView(ViewMatchers.withId(R.id.ingredients))
                 .check(ViewAssertions.matches(
                             ViewMatchers.hasMinimumChildCount(1))
@@ -65,7 +65,7 @@ public class RecipeDetailsFragmentTest {
     }
 
     @Test
-    private void loadRecipeStep() {
+    public void loadRecipeStep() {
         Espresso.onView(ViewMatchers.withId(R.id.steps))
                 .perform(ViewActions.actionWithAssertions(new NestedScrollToAction(new ScrollToAction())))
                 .check(ViewAssertions.matches(Matchers.allOf(
@@ -81,7 +81,7 @@ public class RecipeDetailsFragmentTest {
     }
 
     @After
-    private void after() {
+    public void after() {
         IdlingRegistry.getInstance()
                 .unregister(EspressoIdlingResource.countingIdlingResource);
         Intents.release();

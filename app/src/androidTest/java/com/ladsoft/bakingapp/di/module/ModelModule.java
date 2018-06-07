@@ -4,6 +4,7 @@ import com.ladsoft.bakingapp.data.database.repository.DatabaseIngredientReposito
 import com.ladsoft.bakingapp.data.database.repository.DatabaseRecipeRepository;
 import com.ladsoft.bakingapp.data.database.repository.DatabaseStepRepository;
 import com.ladsoft.bakingapp.data.repository.RecipeRepository;
+import com.ladsoft.bakingapp.manager.SessionManager;
 import com.ladsoft.bakingapp.mvp.RecipeMvp;
 import com.ladsoft.bakingapp.mvp.RecipesMvp;
 import com.ladsoft.bakingapp.mvp.model.EspressoRecipeModel;
@@ -34,5 +35,10 @@ public abstract class ModelModule {
         return new EspressoRecipeModel(cacheRecipesRepository,
                             cacheIngredientRepository,
                             cacheStepRepository);
+    }
+
+        @Provides
+    static com.ladsoft.bakingapp.mvp.presenter.state.RecipeState providesRecipeState(SessionManager sessionManager) {
+        return new com.ladsoft.bakingapp.mvp.presenter.state.RecipeState(sessionManager);
     }
 }

@@ -31,17 +31,17 @@ import org.junit.runner.RunWith;
 public class RecipeStepActivityTest {
 
     @Rule
-    private final ActivityTestRule activityTestRule = new ActivityTestRule<>(RecipeActivity.class, false, false);
+    public final ActivityTestRule activityTestRule = new ActivityTestRule<>(RecipeActivity.class, false, false);
 
     @Before
-    private void before() {
+    public void before() {
         Intents.init();
         IdlingRegistry.getInstance()
                 .register(EspressoIdlingResource.countingIdlingResource);
     }
 
     @Test
-    private void stepNavigation() {
+    public void stepNavigation() {
         activityTestRule.launchActivity(new Intent()
                 .putExtra(RecipeActivity.EXTRA_RECIPE_ID, TestValues.BROWNIES_RECIPE_ID));
 
@@ -97,7 +97,7 @@ public class RecipeStepActivityTest {
     }
 
     @After
-    private void after() {
+    public void after() {
         IdlingRegistry.getInstance()
                 .unregister(EspressoIdlingResource.countingIdlingResource);
         Intents.release();
