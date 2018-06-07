@@ -1,3 +1,7 @@
+/**
+ * Original source: https://github.com/googlecodelabs/android-testing/blob/master/app/src/main/java/com/example/android/testing/notes/util/EspressoIdlingResource.java
+ */
+
 /*
  * Copyright 2015, The Android Open Source Project
  *
@@ -18,9 +22,6 @@ package com.ladsoft.bakingapp.mvp;
 
 import android.util.Log;
 
-/**
- * Contains a static reference to [IdlingResource], only available in the 'mock' build type.
- */
 public abstract class EspressoIdlingResource {
     public static final String LOG_TAG = EspressoIdlingResource.class.getSimpleName();
     public static final String RESOURCE = "GLOBAL";
