@@ -2,6 +2,7 @@ package com.ladsoft.bakingapp;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.Espresso;
 import android.support.test.espresso.IdlingRegistry;
@@ -21,6 +22,8 @@ import com.ladsoft.bakingapp.mvp.EspressoIdlingResource;
 import com.ladsoft.bakingapp.mvp.RecipeMvp;
 import com.ladsoft.bakingapp.viewaction.NestedScrollToAction;
 
+import org.hamcrest.BaseMatcher;
+import org.hamcrest.Description;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
@@ -33,7 +36,7 @@ import org.junit.runner.RunWith;
 public class RecipeDetailsFragmentTest {
 
     @Rule
-    private ActivityTestRule<RecipeActivity> activityTestRule = new ActivityTestRule<RecipeActivity>(RecipeActivity.class) {
+    public final ActivityTestRule<RecipeActivity> activityTestRule = new ActivityTestRule<RecipeActivity>(RecipeActivity.class) {
         @Override
         public Intent getActivityIntent() {
             Context targetContext =
@@ -45,14 +48,14 @@ public class RecipeDetailsFragmentTest {
     };
 
     @Before
-    private void before() {
+    public void before() {
         Intents.init();
         IdlingRegistry.getInstance()
                 .register(EspressoIdlingResource.countingIdlingResource);
     }
 
     @Test
-    private void loadBrowniesRecipe() {
+    public void loadBrowniesRecipe() {
         Espresso.onView(ViewMatchers.withId(R.id.ingredients))
                 .check(ViewAssertions.matches(
                             ViewMatchers.hasMinimumChildCount(1))
@@ -65,7 +68,7 @@ public class RecipeDetailsFragmentTest {
     }
 
     @Test
-    private void loadRecipeStep() {
+    public void loadRecipeStep() {
         Espresso.onView(ViewMatchers.withId(R.id.steps))
                 .perform(ViewActions.actionWithAssertions(new NestedScrollToAction(new ScrollToAction())))
                 .check(ViewAssertions.matches(Matchers.allOf(
@@ -75,13 +78,43 @@ public class RecipeDetailsFragmentTest {
                 .perform(RecyclerViewActions.scrollTo(ViewMatchers.hasDescendant(ViewMatchers.withText(TestValues.BROWNIES_STEP_TEXT))))
                 .perform(RecyclerViewActions.actionOnItemAtPosition(1, ViewActions.click()));
 
-        Intents.intended(IntentMatchers.hasComponent(RecipeStepActivity.class.getName()));
-        Intents.intended(IntentMatchers.hasExtraWithKey(RecipeStepActivity.EXTRA_STEPS));
-        Intents.intended(IntentMatchers.hasExtraWithKey(RecipeStepActivity.EXTRA_STEP_INDEX));
+        int screenOrientation = activityTestRule.getActivity().getResources().getConfiguration().orientation;
+        switch (screenOrientation) {
+            case Configuration.ORIENTATION_PORTRAIT:
+                Intents.intended(IntentMatchers.hasComponent(RecipeStepActivity.class.getName()));
+                Intents.intended(IntentMatchers.hasExtraWithKey(RecipeStepActivity.EXTRA_STEPS));
+                Intents.intended(IntentMatchers.hasExtraWithKey(RecipeStepActivity.EXTRA_STEP_INDEX));
+                break;
+
+            case Configuration.ORIENTATION_LANDSCAPE:
+                BaseMatcher<String> stepDescriptionMatcher = new BaseMatcher<String>() {
+                    @Override
+                    public void describeTo(Description description) {
+                        description.appendText("With description starting with: ");
+                    }
+
+                    @Override
+                    public boolean matches(Object item) {
+                        String test = (String) item;
+
+                        return test.startsWith(TestValues.BROWNIES_STEP_DESCRIPTION_PREFIX);
+                    }
+
+                };
+
+                Espresso.onView(Matchers.allOf(ViewMatchers.withId(R.id.step_description), ViewMatchers.isDisplayed()))
+                        .check(ViewAssertions.matches(ViewMatchers
+                                .withText(stepDescriptionMatcher)
+                        ));
+
+                break;
+
+        }
+
     }
 
     @After
-    private void after() {
+    public void after() {
         IdlingRegistry.getInstance()
                 .unregister(EspressoIdlingResource.countingIdlingResource);
         Intents.release();

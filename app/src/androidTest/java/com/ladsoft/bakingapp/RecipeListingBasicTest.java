@@ -37,18 +37,18 @@ import static org.hamcrest.Matchers.greaterThan;
 public class RecipeListingBasicTest {
 
     @Rule
-    private ActivityTestRule activityTestRule = new ActivityTestRule<>(MainActivity.class);
+    public final ActivityTestRule activityTestRule = new ActivityTestRule<>(MainActivity.class);
 
 
     @Before
-    private void before() {
+    public void before() {
         Intents.init();
 
         IdlingRegistry.getInstance().register(EspressoIdlingResource.countingIdlingResource);
     }
 
     @Test
-    private void checkRecipeListItem() {
+    public void checkRecipeListItem() {
         Espresso.onView(ViewMatchers.withId(R.id.recipes))
                 .check(
                     ViewAssertions.matches(ViewMatchers.isDisplayed())
@@ -58,7 +58,7 @@ public class RecipeListingBasicTest {
     }
 
     @Test
-    private void clickOnItemRecipeOpensRecipePage() {
+    public void clickOnItemRecipeOpensRecipePage() {
         Espresso.onView(ViewMatchers.withId(R.id.recipes))
                 .check(
                         ViewAssertions.matches(ViewMatchers.isDisplayed())
@@ -90,7 +90,7 @@ public class RecipeListingBasicTest {
 
 
     @After
-    private void after() {
+    public void after() {
         IdlingRegistry.getInstance().unregister(EspressoIdlingResource.countingIdlingResource);
         Intents.release();
     }

@@ -41,7 +41,9 @@ public class CustomCountingIdlingResource implements IdlingResource {
         int counterValue = counter.decrementAndGet();
 
         if (counterValue == 0) {
-            resourceCallback.onTransitionToIdle();
+            if (resourceCallback != null) {
+                resourceCallback.onTransitionToIdle();
+            }
         }
 
         if (counterValue < 0) {

@@ -32,8 +32,9 @@ public class RecipeStepTest {
     private int stepIndex = 1;
 
     private final List<Step> steps= new ArrayList<>();
+
     @Rule
-    private final ActivityTestRule<RecipeStepActivity> activityTestRule  = new ActivityTestRule<RecipeStepActivity>(RecipeStepActivity.class) {
+    public final ActivityTestRule<RecipeStepActivity> activityTestRule  = new ActivityTestRule<RecipeStepActivity>(RecipeStepActivity.class) {
         @Override
         public Intent getActivityIntent() {
             Context targetContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
@@ -45,7 +46,7 @@ public class RecipeStepTest {
     };
 
     @Before
-    private void before() {
+    public void before() {
         steps.add(new Step (
                 0,
                 2,
@@ -72,7 +73,7 @@ public class RecipeStepTest {
     }
 
     @Test
-    private void stepClickTest() {
+    public void stepClickTest() {
         checkViewPagerPageContent(steps.get(stepIndex));
 
         clickPrevious();
@@ -87,7 +88,7 @@ public class RecipeStepTest {
     }
 
     @Test
-    private void stepSwipeTest() {
+    public void stepSwipeTest() {
         checkViewPagerPageContent(steps.get(stepIndex));
 
         previousPage();
@@ -138,7 +139,7 @@ public class RecipeStepTest {
     }
 
     @After
-    private void after() {
+    public void after() {
         IdlingRegistry.getInstance()
                 .unregister(EspressoIdlingResource.countingIdlingResource);
         Intents.release();

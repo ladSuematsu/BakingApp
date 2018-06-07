@@ -1,6 +1,7 @@
 package com.ladsoft.bakingapp;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.support.test.espresso.Espresso;
 import android.support.test.espresso.IdlingRegistry;
 import android.support.test.espresso.action.ScrollToAction;
@@ -31,17 +32,17 @@ import org.junit.runner.RunWith;
 public class RecipeStepActivityTest {
 
     @Rule
-    private final ActivityTestRule activityTestRule = new ActivityTestRule<>(RecipeActivity.class, false, false);
+    public final ActivityTestRule activityTestRule = new ActivityTestRule<>(RecipeActivity.class, false, false);
 
     @Before
-    private void before() {
+    public void before() {
         Intents.init();
         IdlingRegistry.getInstance()
                 .register(EspressoIdlingResource.countingIdlingResource);
     }
 
     @Test
-    private void stepNavigation() {
+    public void stepNavigation() {
         activityTestRule.launchActivity(new Intent()
                 .putExtra(RecipeActivity.EXTRA_RECIPE_ID, TestValues.BROWNIES_RECIPE_ID));
 
@@ -54,9 +55,12 @@ public class RecipeStepActivityTest {
                 .perform(RecyclerViewActions.scrollTo(ViewMatchers.hasDescendant(ViewMatchers.withText(TestValues.BROWNIES_STEP_TEXT))))
                 .perform(RecyclerViewActions.actionOnItemAtPosition(1, ViewActions.click()));
 
-        Intents.intended(IntentMatchers.hasComponent(RecipeStepActivity.class.getName()));
-        Intents.intended(IntentMatchers.hasExtraWithKey(RecipeStepActivity.EXTRA_STEPS));
-        Intents.intended(IntentMatchers.hasExtraWithKey(RecipeStepActivity.EXTRA_STEP_INDEX));
+        int screenOrientation = activityTestRule.getActivity().getResources().getConfiguration().orientation;
+        if (screenOrientation == Configuration.ORIENTATION_PORTRAIT) {
+            Intents.intended(IntentMatchers.hasComponent(RecipeStepActivity.class.getName()));
+            Intents.intended(IntentMatchers.hasExtraWithKey(RecipeStepActivity.EXTRA_STEPS));
+            Intents.intended(IntentMatchers.hasExtraWithKey(RecipeStepActivity.EXTRA_STEP_INDEX));
+        }
 
         BaseMatcher<String> stepDescriptionMatcher = new BaseMatcher<String>() {
             @Override
@@ -97,7 +101,7 @@ public class RecipeStepActivityTest {
     }
 
     @After
-    private void after() {
+    public void after() {
         IdlingRegistry.getInstance()
                 .unregister(EspressoIdlingResource.countingIdlingResource);
         Intents.release();
