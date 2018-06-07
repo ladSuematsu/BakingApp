@@ -15,6 +15,11 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 
+/**
+ * Using dependency injection to provide MVP Models that encapsulates Idling Resource
+ * control following https://www.philosophicalhacker.com/post/psa-dont-use-esprsso-idling-resources-like-this/
+ * suggestions for a more clean testing code implementation
+ */
 @Module
 public abstract class ModelModule {
     @Provides @Singleton

@@ -158,8 +158,6 @@ public class RecipeActivity extends AppCompatActivity
                 }
             }
         });
-
-//        setSupportActionBar(toolbar);
     }
 
     public void setupFragments(boolean isRestore) {
