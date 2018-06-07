@@ -2,6 +2,7 @@ package com.ladsoft.bakingapp.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -14,8 +15,6 @@ import com.ladsoft.bakingapp.entity.Step;
 import com.ladsoft.bakingapp.fragment.RecipeStepFragment;
 import com.ladsoft.bakingapp.mvp.StepsMvp;
 import com.ladsoft.bakingapp.mvp.presenter.StepPresenter;
-
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
