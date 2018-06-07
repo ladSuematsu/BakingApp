@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_recipe_list_root"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    >
+    <TextView android:id="@+id/ingredient"
+        android:text="Ingredient"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        />
+
+
+    <TextView android:id="@+id/quantity"
+        android:text="00"
+        android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+        android:layout_below="@id/ingredient"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="8dp"
+        />
+    <TextView android:id="@+id/measure"
+        android:text="measure"
+        android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+        android:layout_toRightOf="@id/quantity"
+        android:layout_alignBottom="@id/quantity"
+        android:layout_marginStart="8dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        />
+</RelativeLayout>
