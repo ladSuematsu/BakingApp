@@ -101,6 +101,10 @@ public class RecipeStepTest {
         checkViewPagerPageContent(steps.get(stepIndex + 1));
     }
 
+    /**
+     * Espresso usage on ViewPager testing following tips from this StackOverflow Qustion:
+     *  https://stackoverflow.com/questions/29836405/testing-viewpager-with-espresso-how-perfom-action-to-a-button-of-an-item
+     */
     private void previousPage() {
         Espresso.onView(ViewMatchers.withId(R.id.step_pager))
                 .perform(ViewActions.swipeRight());
@@ -114,7 +118,6 @@ public class RecipeStepTest {
 
         SystemClock.sleep(1000);
     }
-
 
     private void clickPrevious() {
         Espresso.onView(Matchers.allOf(
