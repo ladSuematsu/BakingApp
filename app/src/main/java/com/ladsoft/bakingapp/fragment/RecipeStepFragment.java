@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.android.exoplayer2.DefaultLoadControl;
@@ -58,6 +59,8 @@ public class RecipeStepFragment extends Fragment {
 
     @BindView(R.id.step_description) TextView stepDescription;
 
+    @BindView(R.id.media_loading) ProgressBar videoLoading;
+    @BindView(R.id.media_message) TextView mediaMessage;
     @BindView(R.id.media_player) SimpleExoPlayerView mediaPlayerView;
 
     private long playbackPosition;
@@ -83,7 +86,9 @@ public class RecipeStepFragment extends Fragment {
         public void onTracksChanged(TrackGroupArray trackGroups, TrackSelectionArray trackSelections) {}
 
         @Override
-        public void onLoadingChanged(boolean isLoading) {}
+        public void onLoadingChanged(boolean isLoading) {
+//            videoLoading.setVisibility(isLoading ? View.VISIBLE : View.GONE);
+        }
 
         @Override
         public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
@@ -94,10 +99,14 @@ public class RecipeStepFragment extends Fragment {
 
                 case Player.STATE_BUFFERING:
                     Log.d(LOG_TAG, hashCode() + ": STATE_BUFFERING");
+                    mediaMessage.setVisibility(View.GONE);
+                    videoLoading.setVisibility(View.VISIBLE);
                     break;
 
                 case Player.STATE_READY:
                     Log.d(LOG_TAG, hashCode() + ": STATE_READY, playback position " + playbackPosition);
+                    mediaMessage.setVisibility(View.GONE);
+                    videoLoading.setVisibility(View.GONE);
                     break;
 
                 case Player.STATE_ENDED:
@@ -115,6 +124,9 @@ public class RecipeStepFragment extends Fragment {
         @Override
         public void onPlayerError(ExoPlaybackException error) {
             Log.e(LOG_TAG, hashCode() + ": Player error", error);
+
+            videoLoading.setVisibility(View.GONE);
+            mediaMessage.setVisibility(View.VISIBLE);
         }
 
         @Override

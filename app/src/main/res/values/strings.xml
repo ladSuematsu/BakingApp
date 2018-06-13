@@ -9,4 +9,5 @@
     <string name="widget_last_selected_recipe_ingredients_list_label">Ingredients</string>
     <string name="widget_no_recipe_title">No recipe selected</string>
     <string name="widget_no_recipe_hint">This widget will show the name and ingredient list of the last recipe selected in the main app</string>
+    <string name="media_error">media error</string>
 </resources>
