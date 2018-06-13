@@ -51,6 +51,7 @@ public class RecipeStepFragment extends Fragment {
     private static final String LOG_TAG = RecipeStepFragment.class.getSimpleName();
     private static final String STATE_DATASOURCE = "state_datasource";
     private static final String STATE_PLAYBACK_POSITION = "state_playback_position";
+    private static final String STATE_PLAYBACK_WINDOW_POSITION = "state_playback_window_position";
 
     @BindView(R.id.next) Button stepNext;
     @BindView(R.id.previous) Button stepPrevious;
@@ -75,7 +76,6 @@ public class RecipeStepFragment extends Fragment {
     private Player.EventListener playerListener = new Player.EventListener() {
         @Override
         public void onTimelineChanged(Timeline timeline, Object manifest) {
-            playbackPosition = mediaPlayer.getCurrentPosition();
             Log.d(LOG_TAG, hashCode() + ": Playback position: " + playbackPosition);
         }
 
@@ -88,9 +88,23 @@ public class RecipeStepFragment extends Fragment {
         @Override
         public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
             switch(playbackState) {
+                case Player.STATE_IDLE:
+                    Log.d(LOG_TAG, hashCode() + ": STATE_IDLE plaback position " + playbackPosition);
+                    break;
+
+                case Player.STATE_BUFFERING:
+                    Log.d(LOG_TAG, hashCode() + ": STATE_BUFFERING");
+                    break;
+
+                case Player.STATE_READY:
+                    Log.d(LOG_TAG, hashCode() + ": STATE_READY, playback position " + playbackPosition);
+                    break;
+
                 case Player.STATE_ENDED:
+                    Log.d(LOG_TAG, hashCode() + ": STATE_ENDED");
                     mediaPlayer.setPlayWhenReady(false);
                     mediaPlayer.seekToDefaultPosition();
+                    updateStartPosition(false);
                     break;
             }
         }
@@ -99,7 +113,9 @@ public class RecipeStepFragment extends Fragment {
         public void onRepeatModeChanged(int repeatMode) {}
 
         @Override
-        public void onPlayerError(ExoPlaybackException error) {}
+        public void onPlayerError(ExoPlaybackException error) {
+            Log.e(LOG_TAG, hashCode() + ": Player error", error);
+        }
 
         @Override
         public void onPositionDiscontinuity() {}
@@ -160,6 +176,7 @@ public class RecipeStepFragment extends Fragment {
         if (savedInstanceState != null) {
             this.datasource = savedInstanceState.getParcelable(STATE_DATASOURCE);
             this.playbackPosition = savedInstanceState.getLong(STATE_PLAYBACK_POSITION);
+            this.currentWindow = savedInstanceState.getInt(STATE_PLAYBACK_WINDOW_POSITION);
         }
     }
 
@@ -186,9 +203,13 @@ public class RecipeStepFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         Log.d(LOG_TAG, hashCode() + ": onSavedInstanceState");
-        super.onSaveInstanceState(outState);
+
+        releasePlayer(true);
         outState.putParcelable(STATE_DATASOURCE, datasource);
         outState.putLong(STATE_PLAYBACK_POSITION, playbackPosition);
+        outState.putInt(STATE_PLAYBACK_WINDOW_POSITION, currentWindow);
+
+        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -201,7 +222,7 @@ public class RecipeStepFragment extends Fragment {
         if (playWhenReady) {
             bindDatasource();
         } else if (isResumed) {
-            releasePlayer(false);
+            releasePlayer(true);
         }
     }
 
@@ -232,14 +253,14 @@ public class RecipeStepFragment extends Fragment {
             LoadControl loadControl = new DefaultLoadControl();
             mediaPlayer = ExoPlayerFactory.newSimpleInstance(renderersFactory, trackSelector, loadControl);
             mediaPlayer.addListener(playerListener);
-
-            if (playWhenReady) {
-                Log.d(LOG_TAG,  hashCode() + ": initializePlayer: autoPlaying media  STEP ID "
-                                    + (datasource != null ? datasource.getId() : "NULL"));
-            }
             mediaPlayerView.setPlayer(mediaPlayer);
 
-            mediaPlayer.setPlayWhenReady(true);
+            if (playWhenReady) {
+                Log.d(LOG_TAG,  hashCode() + ": initializePlayer: autoPlaying media at position "
+                            + playbackPosition + ". " + (datasource != null ? datasource: "NULL"));
+            }
+
+            mediaPlayer.setPlayWhenReady(playWhenReady);
 
             mediaPlayer.seekTo(currentWindow, playbackPosition);
             mediaPlayerView.hideController();
@@ -251,15 +272,13 @@ public class RecipeStepFragment extends Fragment {
     }
 
     private void releasePlayer(boolean keepPlaybackPosition) {
-        if (mediaPlayer != null) {
-            playbackPosition = keepPlaybackPosition ? mediaPlayer.getCurrentPosition() : 0L;
-            currentWindow = mediaPlayer.getCurrentWindowIndex();
-            playWhenReady = mediaPlayer.getPlayWhenReady();
+        if (mediaPlayer == null) { return; }
 
-            mediaPlayer.removeListener(playerListener);
-            mediaPlayer.release();
-            mediaPlayer = null;
-        }
+        updateStartPosition(keepPlaybackPosition);
+
+        mediaPlayer.removeListener(playerListener);
+        mediaPlayer.release();
+        mediaPlayer = null;
     }
 
     private static final DefaultBandwidthMeter BANDWIDTH_METER = new DefaultBandwidthMeter();
@@ -300,5 +319,13 @@ public class RecipeStepFragment extends Fragment {
                 initializePlayer();
             }
         }
+    }
+
+    private void updateStartPosition(boolean keepPlaybackPosition) {
+        if (mediaPlayer == null) {return;}
+
+        playWhenReady = mediaPlayer.getPlayWhenReady();
+        currentWindow = mediaPlayer.getCurrentWindowIndex();
+        playbackPosition = keepPlaybackPosition ? Math.max(0L, mediaPlayer.getContentPosition()) : 0L;
     }
 }
