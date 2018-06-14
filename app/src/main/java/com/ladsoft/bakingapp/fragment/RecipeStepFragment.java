@@ -92,26 +92,6 @@ public class RecipeStepFragment extends Fragment {
     private boolean fullScreenMode;
     private Dialog fullScreenVideoDialog;
 
-    private void enterFullScreenMode() {
-        ((ViewGroup) mediaPlayerFrame.getParent()).removeView(mediaPlayerFrame);
-        fullScreenVideoDialog.addContentView(mediaPlayerFrame, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        toggleFullscreenIcon.setImageDrawable(fullScreenExit);
-
-        fullScreenMode = true;
-        fullScreenVideoDialog.show();
-    }
-
-    private void exitFullscreenMode() {
-        if (fullScreenVideoDialog.isShowing()) {
-            ((ViewGroup) mediaPlayerFrame.getParent()).removeView(mediaPlayerFrame);
-            mediaContainerFrame.addView(mediaPlayerFrame);
-            toggleFullscreenIcon.setImageDrawable(fullScreenEnter);
-
-            fullScreenMode = false;
-            fullScreenVideoDialog.dismiss();
-        }
-    }
-
     private Player.EventListener playerListener = new Player.EventListener() {
 
         @Override
@@ -224,6 +204,7 @@ public class RecipeStepFragment extends Fragment {
                 if (listener != null) { listener.onNextPress(); }
             }
         });
+
 
         fullScreenVideoDialog = new Dialog(getContext(), android.R.style.Theme) {
             @Override
@@ -431,5 +412,33 @@ public class RecipeStepFragment extends Fragment {
         playWhenReady = mediaPlayer.getPlayWhenReady();
         currentWindow = mediaPlayer.getCurrentWindowIndex();
         playbackPosition = keepPlaybackPosition ? Math.max(0L, mediaPlayer.getContentPosition()) : 0L;
+    }
+
+    /**
+     * Fullscreen mode implementation reference:
+     * https://geoffledak.com/blog/tag/android/
+     *
+     * Custom Exoplayer Control View reference:
+     * https://medium.com/google-exoplayer/customizing-exoplayers-ui-components-728cf55ee07a
+     */
+
+    private void enterFullScreenMode() {
+        ((ViewGroup) mediaPlayerFrame.getParent()).removeView(mediaPlayerFrame);
+        fullScreenVideoDialog.addContentView(mediaPlayerFrame, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        toggleFullscreenIcon.setImageDrawable(fullScreenExit);
+
+        fullScreenMode = true;
+        fullScreenVideoDialog.show();
+    }
+
+    private void exitFullscreenMode() {
+        if (fullScreenVideoDialog.isShowing()) {
+            ((ViewGroup) mediaPlayerFrame.getParent()).removeView(mediaPlayerFrame);
+            mediaContainerFrame.addView(mediaPlayerFrame);
+            toggleFullscreenIcon.setImageDrawable(fullScreenEnter);
+
+            fullScreenMode = false;
+            fullScreenVideoDialog.dismiss();
+        }
     }
 }

@@ -11,8 +11,8 @@ android {
         applicationId "com.ladsoft.bakingapp"
         minSdkVersion rootProject.minSdkVersion
         targetSdkVersion rootProject.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        versionCode 10100
+        versionName "1.1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
         buildConfigField STRING, "DB_NAME", "\"bakingapp\""
