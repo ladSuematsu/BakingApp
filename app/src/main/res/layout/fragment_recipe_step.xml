@@ -18,14 +18,14 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             >
-            <com.google.android.exoplayer2.ui.SimpleExoPlayerView
-                android:id="@+id/media_player"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.0"
+            <FrameLayout android:id="@+id/media_player_container"
+                android:layout_weight="1"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="1"
-                />
+                >
+                <include layout="@layout/player_frame_include"
+                    android:id="@+id/player_frame"/>
+            </FrameLayout>
 
             <android.support.v7.widget.CardView
                 android:id="@+id/step_description_container"
@@ -45,7 +45,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     />
-                />
             </android.support.v7.widget.CardView>
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>

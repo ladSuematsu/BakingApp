@@ -1,7 +1,9 @@
 package com.ladsoft.bakingapp.fragment;
 
 
+import android.app.Dialog;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -11,6 +13,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.android.exoplayer2.DefaultLoadControl;
@@ -43,7 +48,9 @@ import butterknife.ButterKnife;
 
 public class RecipeStepFragment extends Fragment {
     public interface Callback {
+
         void onNextPress();
+
         void onPreviousPress();
         Step onVisible();
     }
@@ -51,13 +58,23 @@ public class RecipeStepFragment extends Fragment {
     private static final String LOG_TAG = RecipeStepFragment.class.getSimpleName();
     private static final String STATE_DATASOURCE = "state_datasource";
     private static final String STATE_PLAYBACK_POSITION = "state_playback_position";
+    private static final String STATE_PLAYBACK_WINDOW_POSITION = "state_playback_window_position";
+    private static final String STATE_PLAYBACK_MODE_FULLSCREEN = "state_playback_mode_fullscreen";
 
     @BindView(R.id.next) Button stepNext;
     @BindView(R.id.previous) Button stepPrevious;
 
     @BindView(R.id.step_description) TextView stepDescription;
 
+    @BindView(R.id.media_player_container) FrameLayout mediaContainerFrame;
+    @BindView(R.id.media_loading) ProgressBar videoLoading;
+    @BindView(R.id.media_message) TextView mediaMessage;
     @BindView(R.id.media_player) SimpleExoPlayerView mediaPlayerView;
+    @BindView(R.id.player_frame) ViewGroup mediaPlayerFrame;
+    @BindView(R.id.exo_play) ImageButton playIcon;
+    @BindView(R.id.exo_toggle_fullscreen_icon) ImageButton toggleFullscreenIcon;
+    private Drawable fullScreenEnter;
+    private Drawable fullScreenExit;
 
     private long playbackPosition;
     private Step datasource;
@@ -72,10 +89,13 @@ public class RecipeStepFragment extends Fragment {
         return new RecipeStepFragment();
     }
 
+    private boolean fullScreenMode;
+    private Dialog fullScreenVideoDialog;
+
     private Player.EventListener playerListener = new Player.EventListener() {
+
         @Override
-        public void onTimelineChanged(Timeline timeline, Object manifest) {
-            playbackPosition = mediaPlayer.getCurrentPosition();
+        public void onTimelineChanged(Timeline timeline, Object manifest, int reason) {
             Log.d(LOG_TAG, hashCode() + ": Playback position: " + playbackPosition);
         }
 
@@ -83,14 +103,34 @@ public class RecipeStepFragment extends Fragment {
         public void onTracksChanged(TrackGroupArray trackGroups, TrackSelectionArray trackSelections) {}
 
         @Override
-        public void onLoadingChanged(boolean isLoading) {}
+        public void onLoadingChanged(boolean isLoading) { }
 
         @Override
         public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
             switch(playbackState) {
+                case Player.STATE_IDLE:
+                    Log.d(LOG_TAG, hashCode() + ": STATE_IDLE plaback position " + playbackPosition);
+                    break;
+
+                case Player.STATE_BUFFERING:
+                    Log.d(LOG_TAG, hashCode() + ": STATE_BUFFERING");
+                    mediaMessage.setVisibility(View.GONE);
+                    mediaPlayerView.setVisibility(View.VISIBLE);
+                    videoLoading.setVisibility(View.VISIBLE);
+                    break;
+
+                case Player.STATE_READY:
+                    Log.d(LOG_TAG, hashCode() + ": STATE_READY, playback position " + playbackPosition);
+                    mediaMessage.setVisibility(View.GONE);
+                    mediaPlayerView.setVisibility(View.VISIBLE);
+                    videoLoading.setVisibility(View.GONE);
+                    break;
+
                 case Player.STATE_ENDED:
+                    Log.d(LOG_TAG, hashCode() + ": STATE_ENDED");
                     mediaPlayer.setPlayWhenReady(false);
                     mediaPlayer.seekToDefaultPosition();
+                    updateStartPosition(false);
                     break;
             }
         }
@@ -99,18 +139,39 @@ public class RecipeStepFragment extends Fragment {
         public void onRepeatModeChanged(int repeatMode) {}
 
         @Override
-        public void onPlayerError(ExoPlaybackException error) {}
+        public void onShuffleModeEnabledChanged(boolean shuffleModeEnabled) {
+
+        }
 
         @Override
-        public void onPositionDiscontinuity() {}
+        public void onPlayerError(ExoPlaybackException error) {
+            Log.e(LOG_TAG, hashCode() + ": Player error", error);
+
+            videoLoading.setVisibility(View.GONE);
+            mediaPlayerView.setVisibility(View.GONE);
+            mediaMessage.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        public void onPositionDiscontinuity(int reason) {
+
+        }
 
         @Override
         public void onPlaybackParametersChanged(PlaybackParameters playbackParameters) {}
+
+        @Override
+        public void onSeekProcessed() {
+
+        }
     };
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+
+        fullScreenExit = getResources().getDrawable(R.drawable.ic_fullscreen_exit_white_24dp);
+        fullScreenEnter = getResources().getDrawable(R.drawable.ic_fullscreen_white_24dp);
 
         listener = (Callback) getActivity();
     }
@@ -144,10 +205,40 @@ public class RecipeStepFragment extends Fragment {
             }
         });
 
+
+        fullScreenVideoDialog = new Dialog(getContext(), android.R.style.Theme) {
+            @Override
+            public void onBackPressed() {
+                if (fullScreenMode) {
+                    exitFullscreenMode();
+                }
+
+                super.onBackPressed();
+            }
+        };
+
+        this.toggleFullscreenIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (fullScreenMode) {
+                    exitFullscreenMode();
+                } else {
+                    enterFullScreenMode();
+                }
+            }
+        });
+
+        this.mediaMessage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                initializePlayer();
+            }
+        });
+
         if (datasource == null) {
             stepDescription.setText(null);
 
-            if (mediaSource != null) { mediaSource.releaseSource(); }
+            if (mediaSource != null) { mediaSource.releaseSource(null); }
             if (mediaPlayer != null) { mediaPlayer.clearVideoSurface(); }
         }
     }
@@ -160,6 +251,16 @@ public class RecipeStepFragment extends Fragment {
         if (savedInstanceState != null) {
             this.datasource = savedInstanceState.getParcelable(STATE_DATASOURCE);
             this.playbackPosition = savedInstanceState.getLong(STATE_PLAYBACK_POSITION);
+            this.currentWindow = savedInstanceState.getInt(STATE_PLAYBACK_WINDOW_POSITION);
+            this.fullScreenMode = savedInstanceState.getBoolean(STATE_PLAYBACK_MODE_FULLSCREEN);
+
+            this.toggleFullscreenIcon.setImageDrawable(fullScreenMode
+                                                        ? fullScreenExit
+                                                        : fullScreenEnter);
+
+            if (fullScreenMode) {
+                enterFullScreenMode();
+            }
         }
     }
 
@@ -186,9 +287,14 @@ public class RecipeStepFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         Log.d(LOG_TAG, hashCode() + ": onSavedInstanceState");
-        super.onSaveInstanceState(outState);
+
+        releasePlayer(true);
         outState.putParcelable(STATE_DATASOURCE, datasource);
         outState.putLong(STATE_PLAYBACK_POSITION, playbackPosition);
+        outState.putInt(STATE_PLAYBACK_WINDOW_POSITION, currentWindow);
+        outState.putBoolean(STATE_PLAYBACK_MODE_FULLSCREEN, fullScreenMode);
+
+        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -201,7 +307,7 @@ public class RecipeStepFragment extends Fragment {
         if (playWhenReady) {
             bindDatasource();
         } else if (isResumed) {
-            releasePlayer(false);
+            releasePlayer(true);
         }
     }
 
@@ -232,14 +338,14 @@ public class RecipeStepFragment extends Fragment {
             LoadControl loadControl = new DefaultLoadControl();
             mediaPlayer = ExoPlayerFactory.newSimpleInstance(renderersFactory, trackSelector, loadControl);
             mediaPlayer.addListener(playerListener);
-
-            if (playWhenReady) {
-                Log.d(LOG_TAG,  hashCode() + ": initializePlayer: autoPlaying media  STEP ID "
-                                    + (datasource != null ? datasource.getId() : "NULL"));
-            }
             mediaPlayerView.setPlayer(mediaPlayer);
 
-            mediaPlayer.setPlayWhenReady(true);
+            if (playWhenReady) {
+                Log.d(LOG_TAG,  hashCode() + ": initializePlayer: autoPlaying media at position "
+                            + playbackPosition + ". " + (datasource != null ? datasource: "NULL"));
+            }
+
+            mediaPlayer.setPlayWhenReady(playWhenReady);
 
             mediaPlayer.seekTo(currentWindow, playbackPosition);
             mediaPlayerView.hideController();
@@ -251,15 +357,13 @@ public class RecipeStepFragment extends Fragment {
     }
 
     private void releasePlayer(boolean keepPlaybackPosition) {
-        if (mediaPlayer != null) {
-            playbackPosition = keepPlaybackPosition ? mediaPlayer.getCurrentPosition() : 0L;
-            currentWindow = mediaPlayer.getCurrentWindowIndex();
-            playWhenReady = mediaPlayer.getPlayWhenReady();
+        if (mediaPlayer == null) { return; }
 
-            mediaPlayer.removeListener(playerListener);
-            mediaPlayer.release();
-            mediaPlayer = null;
-        }
+        updateStartPosition(keepPlaybackPosition);
+
+        mediaPlayer.removeListener(playerListener);
+        mediaPlayer.release();
+        mediaPlayer = null;
     }
 
     private static final DefaultBandwidthMeter BANDWIDTH_METER = new DefaultBandwidthMeter();
@@ -284,7 +388,7 @@ public class RecipeStepFragment extends Fragment {
             stepDescription.setText(null);
 
             if (mediaSource != null) {
-                mediaSource.releaseSource();
+                mediaSource.releaseSource(null);
                 mediaPlayer.clearVideoSurface();
             }
         } else {
@@ -299,6 +403,42 @@ public class RecipeStepFragment extends Fragment {
                 mediaSource = buildMediaSource(mediaUri);
                 initializePlayer();
             }
+        }
+    }
+
+    private void updateStartPosition(boolean keepPlaybackPosition) {
+        if (mediaPlayer == null) {return;}
+
+        playWhenReady = mediaPlayer.getPlayWhenReady();
+        currentWindow = mediaPlayer.getCurrentWindowIndex();
+        playbackPosition = keepPlaybackPosition ? Math.max(0L, mediaPlayer.getContentPosition()) : 0L;
+    }
+
+    /**
+     * Fullscreen mode implementation reference:
+     * https://geoffledak.com/blog/tag/android/
+     *
+     * Custom Exoplayer Control View reference:
+     * https://medium.com/google-exoplayer/customizing-exoplayers-ui-components-728cf55ee07a
+     */
+
+    private void enterFullScreenMode() {
+        ((ViewGroup) mediaPlayerFrame.getParent()).removeView(mediaPlayerFrame);
+        fullScreenVideoDialog.addContentView(mediaPlayerFrame, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        toggleFullscreenIcon.setImageDrawable(fullScreenExit);
+
+        fullScreenMode = true;
+        fullScreenVideoDialog.show();
+    }
+
+    private void exitFullscreenMode() {
+        if (fullScreenVideoDialog.isShowing()) {
+            ((ViewGroup) mediaPlayerFrame.getParent()).removeView(mediaPlayerFrame);
+            mediaContainerFrame.addView(mediaPlayerFrame);
+            toggleFullscreenIcon.setImageDrawable(fullScreenEnter);
+
+            fullScreenMode = false;
+            fullScreenVideoDialog.dismiss();
         }
     }
 }

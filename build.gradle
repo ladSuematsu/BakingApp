@@ -11,7 +11,7 @@ buildscript {
         // App dependendencies
         supportLibraryVersion = '27.0.2'
         constraintLayoutVersion = '1.0.2'
-        exoplayerVersion = 'r2.5.4'
+        exoplayerVersion = '2.8.1'
 
         kotlinVersion = '1.2.+'
         roomVersion = '1.0.0'
@@ -29,8 +29,8 @@ buildscript {
     }
 
     repositories {
-        jcenter()
         google()
+        jcenter()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.1.2'
@@ -42,8 +42,8 @@ buildscript {
 
 allprojects {
     repositories {
-        jcenter()
         google()
+        jcenter()
     }
 }
 
